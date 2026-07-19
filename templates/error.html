@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ error_title }} · DataPilot{% endblock %}
+
+{% block content %}
+<section class="error-page" aria-labelledby="error-title">
+  <span class="error-code">{{ status_code }}</span>
+  <div>
+    <span class="eyebrow">DataPilot reste disponible</span>
+    <h1 id="error-title">{{ error_title }}</h1>
+    <p>{{ error_message }}</p>
+    <div class="error-actions">
+      <a class="btn primary" href="{{ url_for('index') }}">Revenir à l’accueil</a>
+      <button class="btn secondary" type="button" onclick="window.location.reload()">Réessayer</button>
+    </div>
+  </div>
+</section>
+{% endblock %}

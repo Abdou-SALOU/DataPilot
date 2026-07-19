@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+{% block title %}{{ project_sections[active_section].label }} · {{ metadata.name }} · DataPilot{% endblock %}
+
+{% block content %}
+{% set current_section = project_sections[active_section] %}
+<nav class="project-backbar" aria-label="Retour aux analyses">
+  <a href="{{ url_for('index') }}#analyses"><span aria-hidden="true">←</span> Mes analyses</a>
+  <span>Étape {{ current_section.number }} sur {{ project_sections|length }}</span>
+</nav>
+
+<section class="dataset-head" data-reveal="hero">
+  <div class="dataset-copy">
+    <div class="dataset-title-row">
+      <span class="file-context"><i>{{ metadata.extension|replace('.', '')|upper }}</i></span>
+      <div>
+        <span class="dataset-ready"><i aria-hidden="true">✓</i> Analyse prête</span>
+        <h1>{{ metadata.name|replace('_', ' ') }}</h1>
+      </div>
+    </div>
+    <details class="project-file-details">
+      <summary>Détails du fichier</summary>
+      <p>{{ metadata.original_filename }} · {% if metadata.cleaned %}version nettoyée{% else %}fichier d’origine{% endif %}</p>
+    </details>
+  </div>
+  <div class="head-actions">
+    <a class="btn primary project-download" href="{{ url_for('export', project_id=project_id, fmt='xlsx') }}" download data-export-download data-export-label="Préparation du fichier Excel…">
+      <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 18v2h14v-2"/></svg>
+      Télécharger Excel
+    </a>
+    <details class="export-menu">
+      <summary>Autres formats</summary>
+      <div>
+        <a href="{{ url_for('export', project_id=project_id, fmt='csv') }}" download>Fichier CSV</a>
+        <a href="{{ url_for('export', project_id=project_id, fmt='json') }}" download>Fichier JSON</a>
+      </div>
+    </details>
+  </div>
+</section>
+
+<div class="project-workspace">
+<nav
+  class="project-nav"
+  aria-label="Pages de l’analyse"
+  data-project-nav
+  data-project-url="{{ url_for('project', project_id=project_id, section=active_section) }}"
+>
+  <div class="project-nav-head">
+    <span>Votre parcours</span>
+    <strong>{{ current_section.number }}/{{ project_sections|length }}</strong>
+    <div class="project-progress" role="progressbar" aria-label="Progression dans l’analyse" aria-valuemin="1" aria-valuemax="{{ project_sections|length }}" aria-valuenow="{{ current_section.number }}">
+      <i style="--progress: {{ (current_section.number|int) * 25 }}%"></i>
+    </div>
+  </div>
+  {% for section_key, section in project_sections.items() %}
+  <a
+    href="{{ url_for('project', project_id=project_id, section=section_key) }}"
+    class="{% if active_section == section_key %}is-active{% endif %}"
+    {% if active_section == section_key %}aria-current="page"{% endif %}
+  >
+    <span class="project-nav-number">{{ section.number }}</span>
+    <span class="project-nav-copy">
+      <strong>{{ section.label }}</strong>
+      <small>{{ section.description }}</small>
+    </span>
+    <span class="project-nav-arrow" aria-hidden="true">›</span>
+  </a>
+  {% endfor %}
+  <button type="button" class="project-nav-help" data-open-chatbot>
+    <span aria-hidden="true">?</span>
+    <strong>Besoin d’aide ?</strong>
+    <small>Posez votre question</small>
+  </button>
+</nav>
+
+<section class="project-stage" aria-labelledby="project-stage-title">
+  <header class="project-guidance">
+    <span class="project-guidance-number" aria-hidden="true">{{ current_section.number }}</span>
+    <div>
+      <small>Ce que vous allez faire</small>
+      <h2 id="project-stage-title">{{ current_section.label }}</h2>
+      <p>{{ current_section.guidance }}</p>
+    </div>
+  </header>
+
+<div class="project-page-content" data-project-section="{{ active_section }}">
+{% if active_section == 'overview' %}
+{% if metadata.source_kind == 'invoices' %}
+<section class="invoice-review panel" id="invoice-review" aria-labelledby="invoice-review-title" data-reveal>
+  <div class="panel-head">
+    <div><span class="eyebrow">Validation humaine</span><h2 id="invoice-review-title">Vérifiez vos factures</h2><p>Les valeurs détectées sont des propositions. Corrigez-les si nécessaire, puis confirmez-les.</p></div>
+    <span class="count">{{ invoice_rows|length }}</span>
+  </div>
+  <form action="{{ url_for('confirm_invoices', project_id=project_id) }}" method="post" class="invoice-review-form" data-loading-form data-async-project data-refresh-targets=".dataset-head,#invoice-review,#overview,#automatic-dashboard,#cleaning,#business-words,#chart-studio" data-focus-target="#overview" data-loading-text="Confirmation…">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    {% for row in invoice_rows %}
+    {% set review = metadata.invoice_reviews[loop.index0] if metadata.invoice_reviews and metadata.invoice_reviews|length > loop.index0 else none %}
+    <fieldset class="invoice-sheet">
+      <legend>Facture {{ loop.index }} · {{ row['fichier_source'] }}</legend>
+      {% if review %}<p class="document-reading-status {{ review.status }}">{{ review.message }}</p>{% endif %}
+      <div class="simple-grid three">
+        <div><label for="supplier-{{ loop.index0 }}">Fournisseur</label><input id="supplier-{{ loop.index0 }}" name="fournisseur_{{ loop.index0 }}" value="{{ row['fournisseur'] or '' }}" maxlength="160"></div>
+        <div><label for="invoice-number-{{ loop.index0 }}">Numéro de facture</label><input id="invoice-number-{{ loop.index0 }}" name="numero_facture_{{ loop.index0 }}" value="{{ row['numero_facture'] or '' }}" maxlength="160"></div>
+        <div><label for="invoice-date-{{ loop.index0 }}">Date</label><input id="invoice-date-{{ loop.index0 }}" name="date_facture_{{ loop.index0 }}" type="date" value="{{ (row['date_facture'] or '')[:10] }}"></div>
+        <div><label for="invoice-ht-{{ loop.index0 }}">Total hors taxes</label><input id="invoice-ht-{{ loop.index0 }}" name="total_ht_{{ loop.index0 }}" inputmode="decimal" value="{{ row['total_ht'] if row['total_ht'] is not none else '' }}"></div>
+        <div><label for="invoice-vat-{{ loop.index0 }}">Montant de TVA</label><input id="invoice-vat-{{ loop.index0 }}" name="tva_{{ loop.index0 }}" inputmode="decimal" value="{{ row['tva'] if row['tva'] is not none else '' }}"></div>
+        <div><label for="invoice-vat-rate-{{ loop.index0 }}">Taux de TVA (%)</label><input id="invoice-vat-rate-{{ loop.index0 }}" name="taux_tva_{{ loop.index0 }}" inputmode="decimal" value="{{ row['taux_tva'] if row['taux_tva'] is not none else '' }}"></div>
+        <div><label for="invoice-total-{{ loop.index0 }}">Total à payer</label><input id="invoice-total-{{ loop.index0 }}" name="total_ttc_{{ loop.index0 }}" inputmode="decimal" value="{{ row['total_ttc'] if row['total_ttc'] is not none else '' }}"></div>
+        <div><label for="invoice-currency-{{ loop.index0 }}">Devise</label><input id="invoice-currency-{{ loop.index0 }}" name="devise_{{ loop.index0 }}" value="{{ row['devise'] or '' }}" maxlength="20" placeholder="Ex. MAD"></div>
+      </div>
+    </fieldset>
+    {% endfor %}
+    <button class="btn primary" type="submit" data-submit-button>J’ai vérifié ces informations</button>
+    <div class="loading-state inline-loading" role="status" aria-live="polite" hidden><span class="loading-bar" aria-hidden="true"><i></i></span><strong>Confirmation…</strong></div>
+  </form>
+</section>
+{% endif %}
+
+<section class="overview-section" id="overview" data-reveal>
+  <div class="section-head compact-head">
+    <div><span class="eyebrow">Vue d’ensemble</span><h2>L’essentiel de votre fichier</h2><p>Les points à connaître avant de prendre une décision.</p></div>
+  </div>
+  <div class="kpis" data-stagger>
+    <article class="quality-card">
+      <div class="kpi-label"><span aria-hidden="true">✓</span><small>Qualité du fichier</small></div>
+      <strong class="score">{{ profile.quality_score }}<i>/100</i></strong>
+      <div class="meter" role="progressbar" aria-label="Qualité du fichier" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ profile.quality_score }}"><span style="--score:{{ profile.quality_score }}%"></span></div>
+    </article>
+    <article><div class="kpi-label"><span aria-hidden="true">≡</span><small>Lignes</small></div><strong>{{ "{:,}".format(profile.rows).replace(',', ' ') }}</strong><p>{{ profile.columns_count }} colonnes détectées</p></article>
+    <article><div class="kpi-label"><span aria-hidden="true">○</span><small>Cellules vides</small></div><strong>{{ profile.missing + profile.empty_strings }}</strong><p>cellules à contrôler</p></article>
+    <article><div class="kpi-label"><span aria-hidden="true">◇</span><small>Doublons</small></div><strong>{{ profile.duplicates }}</strong><p>lignes identiques</p></article>
+  </div>
+
+  <section class="tracked-numbers" id="tracked-numbers" aria-labelledby="tracked-title">
+    <div class="subsection-head">
+      <div><span class="eyebrow">Vos objectifs</span><h3 id="tracked-title">Mes chiffres à suivre</h3><p>Choisissez un chiffre important pour votre activité. DataPilot le recalcule lorsque le fichier change.</p></div>
+    </div>
+    {% if saved_kpis %}
+    <div class="tracked-grid">
+      {% for item in saved_kpis %}
+      <article class="tracked-card {{ item.status }}">
+        <div class="tracked-card-head"><span>{{ item.status_label }}</span><form action="{{ url_for('delete_kpi', project_id=project_id, kpi_id=item.id) }}" method="post" data-confirm="Retirer ce chiffre du résumé ?" data-loading-form data-async-project data-refresh-targets="#overview" data-focus-target="#tracked-numbers" data-loading-text="Retrait…"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button type="submit" aria-label="Retirer {{ item.name }}">Retirer</button></form></div>
+        <h4>{{ item.name }}</h4>
+        <strong>{{ item.value }}</strong>
+        {% if item.target is not none %}<p>Objectif : {{ item.target }} · {{ item.favorable_direction_label }}</p>{% else %}<p>Aucun objectif défini.</p>{% endif %}
+        {% if item.progress is not none %}<div class="target-progress" role="progressbar" aria-label="Progression de {{ item.name }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ item.progress }}"><span style="--progress:{{ item.progress }}%"></span></div>{% endif %}
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-guidance">Aucun chiffre personnel pour le moment. Ajoutez par exemple votre total de ventes ou votre panier moyen.</p>
+    {% endif %}
+    <details class="feature-builder">
+      <summary>Ajouter un chiffre à suivre</summary>
+      <form action="{{ url_for('create_kpi', project_id=project_id) }}" method="post" class="simple-feature-form" data-loading-form data-async-project data-refresh-targets="#overview" data-focus-target="#tracked-numbers" data-loading-text="Ajout…">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <label for="kpi-name">Comment voulez-vous l’appeler ?</label>
+        <input id="kpi-name" name="name" maxlength="80" placeholder="Ex. Objectif de ventes mensuel">
+        <div class="simple-grid three">
+          <div><label for="kpi-measure">Quel chiffre utiliser ?</label><select id="kpi-measure" name="measure"><option value="">Nombre de lignes</option>{% for option in chart_options.measures %}<option value="{{ option.name }}">{{ option.label }}</option>{% endfor %}</select></div>
+          <div><label for="kpi-aggregation">Comment le calculer ?</label><select id="kpi-aggregation" name="aggregation"><option value="count">Compter</option><option value="sum">Faire le total</option><option value="mean">Calculer la moyenne</option><option value="median">Trouver la valeur centrale</option></select></div>
+          <div><label for="kpi-target">Quel est votre objectif ?</label><input id="kpi-target" name="target" inputmode="decimal" placeholder="Ex. 10000"></div>
+        </div>
+        <fieldset class="plain-choice"><legend>Quel sens est favorable ?</legend><label><input type="radio" name="direction" value="higher" checked> Plus le chiffre est élevé, mieux c’est</label><label><input type="radio" name="direction" value="lower"> Plus le chiffre est bas, mieux c’est</label></fieldset>
+        <button class="btn primary" type="submit" data-submit-button>Ajouter à mon résumé</button>
+      </form>
+    </details>
+  </section>
+</section>
+
+<section class="dashboard-section" id="automatic-dashboard" data-reveal>
+  <div class="section-head">
+    <div><span class="eyebrow">Tableau de bord automatique</span><h2>Vos données en un coup d’œil</h2><p>DataPilot choisit les vues les plus utiles selon le contenu du fichier.</p></div>
+  </div>
+  {% if dashboard.charts %}
+  <div class="charts-grid">
+    {% for chart in dashboard.charts %}
+    <article class="chart-card">
+      <div class="chart-card-head"><span>Vue automatique</span><i aria-hidden="true">•••</i></div>
+      <h3>{{ chart.title }}</h3>
+      {% if chart.subtitle %}<p class="chart-subtitle">{{ chart.subtitle }}</p>{% endif %}
+      <div class="chart-canvas-wrap"><canvas id="chart{{ loop.index0 }}" height="225" role="img" aria-label="Graphique : {{ chart.title }}"></canvas></div>
+      <p class="chart-caption">{{ chart.subtitle or 'Visualisation générée à partir des valeurs disponibles dans le fichier.' }}</p>
+      <p class="chart-render-error" hidden>Le graphique ne peut pas être affiché pour le moment.</p>
+      <div class="chart-help-row">
+        {% if chart.explanation %}<details class="chart-explanation"><summary>Comprendre le point le plus élevé</summary><div><ul>{% for item in chart.explanation.points %}<li>{{ item }}</li>{% endfor %}</ul><p>{{ chart.explanation.caution }}</p></div></details>{% endif %}
+        <details class="chart-values"><summary>Voir les valeurs</summary><div class="mini-table-wrap"><table><thead><tr><th scope="col">Élément</th><th scope="col">Valeur</th></tr></thead><tbody>{% for value in chart['values'] %}<tr><td>{{ chart['labels'][loop.index0] }}</td><td>{{ value }}</td></tr>{% endfor %}</tbody></table></div></details>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-good">Les données ne contiennent pas encore assez de valeurs pour générer un graphique fiable.</div>
+  {% endif %}
+  {% if dashboard.correlations %}
+  <div class="correlations"><h3>Relations entre vos chiffres</h3>{% for item in dashboard.correlations %}<span>{{ item.left }} ↔ {{ item.right }} <b>{{ item.value }}</b></span>{% endfor %}</div>
+  {% endif %}
+  <script type="application/json" data-dashboard-chart-data>{{ dashboard.charts|tojson }}</script>
+</section>
+{% endif %}
+
+{% if active_section == 'cleaning' %}
+<section class="panel cleaning-panel" id="cleaning" data-reveal>
+  <div class="panel-head">
+    <div>
+      <span class="eyebrow">{% if suggestions %}À vérifier{% else %}Tout est en ordre{% endif %}</span>
+      <h2>{% if suggestions %}Corrections proposées{% else %}Aucune correction nécessaire{% endif %}</h2>
+      <p>{% if suggestions %}Cochez seulement les améliorations que vous souhaitez appliquer.{% else %}Votre fichier ne contient plus d’erreur simple à corriger automatiquement.{% endif %}</p>
+    </div>
+    <span class="count {% if not suggestions %}is-success{% endif %}">{% if suggestions %}{{ suggestions|length }}{% else %}✓{% endif %}</span>
+  </div>
+  {% if suggestions %}
+  <form action="{{ url_for('clean', project_id=project_id) }}" method="post" data-loading-form data-async-project data-refresh-targets=".dataset-head,#overview,#automatic-dashboard,#cleaning,#business-words,#chart-studio" data-focus-target="#cleaning" data-loading-text="Corrections en cours…">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <div class="suggestions">
+    {% for suggestion in suggestions %}
+      <label class="suggestion">
+        <input type="checkbox" name="actions" value="{{ suggestion.id }}" {% if suggestion.severity == 'fort' %}checked{% endif %}>
+        <span class="checkmark" aria-hidden="true">✓</span>
+        <span><strong>{{ suggestion.label }}</strong><small>{{ suggestion.description }}</small></span>
+        <em>{{ suggestion.impact }}</em>
+      </label>
+    {% endfor %}
+    </div>
+    <button class="btn primary wide" type="submit" data-submit-button>Appliquer les corrections sélectionnées</button>
+    <div class="loading-state inline-loading" role="status" aria-live="polite" hidden><span class="loading-bar" aria-hidden="true"><i></i></span><strong>Corrections en cours…</strong></div>
+  </form>
+  {% else %}
+    <div class="empty-good">✓ Aucune correction sûre supplémentaire n’est proposée.</div>
+  {% endif %}
+  {% if metadata.cleaned %}
+  <details class="cleaning-more">
+    <summary>Plus d’options</summary>
+    <form action="{{ url_for('reset', project_id=project_id) }}" method="post" class="reset-form" data-loading-form data-async-project data-refresh-targets=".dataset-head,#overview,#automatic-dashboard,#cleaning,#business-words,#chart-studio" data-focus-target="#overview" data-loading-text="Restauration…">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <button class="link-button" type="submit" data-submit-button>Revenir au fichier d’origine</button>
+    </form>
+  </details>
+  {% endif %}
+
+  {% if metadata.cleaning_batches %}
+  <div class="cleaning-memory" aria-labelledby="cleaning-memory-title">
+    <div>
+      <span class="eyebrow">Historique réversible</span>
+      <h3 id="cleaning-memory-title">Vos étapes restent modifiables</h3>
+      <p>{{ counted_fr(metadata.cleaning_batches|length, 'étape enregistrée', 'étapes enregistrées') }}. Vous pouvez annuler la plus récente ou la transformer en modèle réutilisable.</p>
+    </div>
+    <div class="cleaning-memory-actions">
+      <form action="{{ url_for('undo_cleaning', project_id=project_id) }}" method="post" data-loading-form data-async-project data-refresh-targets=".dataset-head,#overview,#automatic-dashboard,#cleaning,#business-words,#chart-studio" data-focus-target="#cleaning" data-loading-text="Annulation…">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <button class="btn secondary" type="submit" data-submit-button>Annuler la dernière étape</button>
+      </form>
+      <form action="{{ url_for('save_recipe', project_id=project_id) }}" method="post" class="recipe-form" data-loading-form data-async-project data-refresh-targets="#cleaning" data-focus-target="#cleaning-memory-title" data-loading-text="Enregistrement…">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <label for="recipe-name">Nom du modèle</label>
+        <div><input id="recipe-name" name="name" maxlength="80" placeholder="Ex. Nettoyage mensuel"><button class="btn dark" type="submit" data-submit-button>Enregistrer</button></div>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if recipes %}
+  <details class="recipe-library">
+    <summary>Réutiliser un modèle de correction <span>{{ recipes|length }}</span></summary>
+    <div class="recipe-list">
+      {% for recipe in recipes %}
+      <div><span><strong>{{ recipe.name }}</strong><small>{{ counted_fr(recipe.actions|length, 'correction prévue', 'corrections prévues') }}</small></span><form action="{{ url_for('apply_recipe', project_id=project_id, recipe_id=recipe.id) }}" method="post" data-loading-form data-async-project data-refresh-targets=".dataset-head,#overview,#automatic-dashboard,#cleaning,#business-words,#chart-studio" data-focus-target="#cleaning" data-loading-text="Application…"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button type="submit" class="link-button" data-submit-button>Utiliser</button></form></div>
+      {% endfor %}
+    </div>
+  </details>
+  {% endif %}
+</section>
+{% endif %}
+
+{% if active_section == 'names' %}
+<section class="language-workspace" data-reveal>
+  {% include "_business_words.html" %}
+</section>
+{% endif %}
+
+{% if active_section == 'charts' %}
+{% include "_chart_studio.html" %}
+{% endif %}
+</div>
+
+<footer class="project-next-step">
+  {% if current_section.next %}
+  <div>
+    <small>Étape {{ current_section.number }} terminée</small>
+    <strong>{{ current_section.next_label }}</strong>
+  </div>
+  <a class="btn primary" href="{{ url_for('project', project_id=project_id, section=current_section.next) }}">
+    Continuer <span aria-hidden="true">→</span>
+  </a>
+  {% else %}
+  <div>
+    <small>Votre analyse est prête</small>
+    <strong>Téléchargez le résultat</strong>
+  </div>
+  <a class="btn primary" href="{{ url_for('export', project_id=project_id, fmt='xlsx') }}" download>
+    Télécharger Excel <span aria-hidden="true">↓</span>
+  </a>
+  {% endif %}
+</footer>
+</section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='vendor/chart.umd.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='project.js', v='20260718-export2') }}"></script>
+<script>window.DataPilotCharts?.initialize(document);</script>
+{% endblock %}

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="DataPilot — transformez vos fichiers en décisions claires, sans expertise technique.">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>{% block title %}DataPilot{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/datapilot-app-icon-v2.png') }}" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <script>document.documentElement.classList.add('js');</script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='datapilot.css', v='20260719-pages3') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='premium.css', v='20260719-premium4') }}">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Aller au contenu</a>
+
+  <header class="topbar" data-header>
+    <div class="topbar-inner">
+      <a class="brand" href="{{ url_for('index') }}" aria-label="Accueil DataPilot">
+        <span class="brand-mark" aria-hidden="true">
+          <img src="{{ url_for('static', filename='images/datapilot-app-icon-v2.png') }}" alt="">
+        </span>
+        <span class="brand-name">DataPilot<small>Vos données, en clair.</small></span>
+      </a>
+
+      {% if request.endpoint == 'index' %}
+      <nav class="main-nav" aria-label="Navigation principale">
+        <a href="#fonctionnement">Fonctionnement</a>
+        <a href="#invoice-import">Factures</a>
+        {% if projects %}<a href="#analyses">Mes analyses</a>{% endif %}
+      </nav>
+      {% endif %}
+
+      <div class="header-actions">
+        {% if request.endpoint != 'index' %}
+        <a class="header-cta" href="{{ url_for('index') }}#importer">Nouvelle analyse</a>
+        {% else %}
+        <a class="header-cta" href="#importer">Importer</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main class="shell" id="main-content">
+    <div class="flash-stack" aria-live="polite" aria-atomic="true">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}" role="{% if category == 'warn' %}alert{% else %}status{% endif %}">
+            <span aria-hidden="true">{% if category == 'warn' %}!{% else %}✓{% endif %}</span>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endwith %}
+    </div>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <strong>DataPilot</strong>
+      <span>La donnée utile, sans la complexité.</span>
+    </div>
+    <small>Confidentiel par conception · Décisions sous contrôle humain</small>
+  </footer>
+
+  {% if project_id is defined and active_section is defined %}
+    {% include "_chatbot.html" %}
+  {% endif %}
+
+  <script defer src="{{ url_for('static', filename='app.js', v='20260719-pages2') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

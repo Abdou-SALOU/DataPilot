@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Analyse en cours · DataPilot{% endblock %}
+
+{% block content %}
+<section
+  class="processing-page {% if metadata.processing_status == 'failed' %}has-failed{% endif %}"
+  aria-labelledby="processing-title"
+  data-processing-status
+  data-status-url="{{ url_for('project_status', project_id=project_id) }}"
+>
+  <div class="processing-visual" aria-hidden="true">
+    <span></span><span></span><span></span>
+  </div>
+  <div>
+    <span class="eyebrow">Préparation sécurisée</span>
+    <h1 id="processing-title">{% if metadata.processing_status == 'failed' %}L’analyse a besoin de votre aide{% else %}Analyse de votre fichier en cours{% endif %}</h1>
+    <p class="processing-file">{{ metadata.original_filename }}</p>
+    <p class="processing-message" data-processing-message role="status" aria-live="polite">{{ metadata.processing_message }}</p>
+    <progress data-processing-progress max="100" value="{{ metadata.processing_progress|default(5) }}">{{ metadata.processing_progress|default(5) }} %</progress>
+    <small class="processing-help">Vous pouvez laisser cette page ouverte. Le fichier original reste intact.</small>
+    <div class="processing-actions">
+      <form action="{{ url_for('run_project_import_locally', project_id=project_id) }}" method="post" data-loading-form data-loading-text="Analyse locale…">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <button class="btn secondary" type="submit" data-submit-button>Analyser maintenant sur cet ordinateur</button>
+      </form>
+      <a class="btn ghost" href="{{ url_for('index') }}">Revenir à l’accueil</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

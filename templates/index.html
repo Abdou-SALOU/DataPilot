@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}DataPilot · Des fichiers aux décisions{% endblock %}
+
+{% block content %}
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-copy" data-reveal="hero">
+    <span class="hero-badge"><i aria-hidden="true"></i> Pensé pour les PME</span>
+    <h1 id="hero-title">Transformez vos fichiers en <em>décisions claires.</em></h1>
+    <p>Ventes, stocks, clients ou finances : importez votre fichier et obtenez une analyse lisible, des corrections vérifiables et des graphiques prêts à présenter.</p>
+
+    <div class="hero-actions">
+      <a class="btn primary" href="#importer">Analyser mes données <span aria-hidden="true">→</span></a>
+      <form action="{{ url_for('demo') }}" method="post" class="demo-form" data-loading-form data-loading-text="Préparation de la démo…">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <button class="btn secondary" type="submit">Voir une démonstration</button>
+      </form>
+    </div>
+
+    <div class="trust-row" aria-label="Garanties DataPilot">
+      <span><b aria-hidden="true">✓</b> Original conservé</span>
+      <span><b aria-hidden="true">✓</b> Corrections validées par vous</span>
+      <span><b aria-hidden="true">✓</b> Résultats expliqués</span>
+    </div>
+  </div>
+
+  <form class="upload-card" id="importer" action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" data-reveal="hero" data-loading-form data-loading-text="Analyse en cours…">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <div class="upload-card-head">
+      <div>
+        <span class="step-label">Commencer</span>
+        <h2>Importez votre fichier</h2>
+      </div>
+    </div>
+
+    <label class="dropzone" for="dataset">
+      <span class="upload-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14.5v3A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-3"/></svg>
+      </span>
+      <strong>Déposez votre fichier ici</strong>
+      <small id="fileHelp">ou cliquez pour le sélectionner</small>
+      <input id="dataset" name="dataset" type="file" accept=".csv,.xlsx,.xls,.json" aria-describedby="fileHelp filePrivacy" required>
+      <span class="file-name" id="fileName">Aucun fichier sélectionné</span>
+      <span class="format-list" aria-label="Formats acceptés"><i>CSV</i><i>Excel</i><i>JSON</i><i>20 Mo max.</i></span>
+    </label>
+
+    <button class="btn primary wide" type="submit" data-submit-button>Analyser mon fichier <span aria-hidden="true">→</span></button>
+    <p class="local-note" id="filePrivacy"><span aria-hidden="true">●</span> Le fichier brut reste sur cet ordinateur.</p>
+    <div class="loading-state" role="status" aria-live="polite" hidden>
+      <span class="loading-bar" aria-hidden="true"><i></i></span>
+      <strong>Analyse en cours…</strong>
+      <small>Lecture, vérification et préparation du tableau de bord.</small>
+    </div>
+  </form>
+</section>
+
+<section class="capability-strip" aria-label="Fonctionnalités principales" data-reveal>
+  <span><b>4</b> formats acceptés</span>
+  <span><b>100%</b> traçable</span>
+  <span><b>1 clic</b> pour exporter</span>
+  <span><b>0</b> compétence technique requise</span>
+</section>
+
+<section class="invoice-import" id="invoice-import" data-reveal aria-labelledby="invoice-import-title">
+  <div class="invoice-copy">
+    <span class="eyebrow">Factures PDF et photos</span>
+    <h2 id="invoice-import-title">Transformez vos factures en tableau clair.</h2>
+    <p>Déposez jusqu’à 10 factures. DataPilot repère les informations utiles, puis vous demande de les vérifier avant de créer les graphiques.</p>
+    <ol>
+      <li><span>1</span> Sélectionnez vos documents</li>
+      <li><span>2</span> Vérifiez les montants détectés</li>
+      <li><span>3</span> Confirmez avant l’analyse</li>
+    </ol>
+  </div>
+  <form action="{{ url_for('upload_invoices') }}" method="post" enctype="multipart/form-data" class="invoice-upload" data-loading-form data-loading-text="Lecture des factures…">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <label for="invoices"><strong>Choisir mes factures</strong><small id="invoice-help">PDF avec texte, PNG, JPG, TIFF ou WEBP · 10 fichiers maximum</small></label>
+    <input id="invoices" name="invoices" type="file" accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.webp" aria-describedby="invoice-help invoice-privacy" multiple required>
+    <p id="invoice-privacy">Aucun document n’est envoyé en ligne. Une photo nécessite un module de lecture installé sur l’ordinateur.</p>
+    <button class="btn primary wide" type="submit" data-submit-button>Préparer mes factures <span aria-hidden="true">→</span></button>
+    <div class="loading-state inline-loading" role="status" aria-live="polite" hidden><span class="loading-bar" aria-hidden="true"><i></i></span><strong>Lecture des factures…</strong></div>
+  </form>
+</section>
+
+<section class="workflow-section" id="fonctionnement" data-reveal>
+  <div class="workflow-head">
+    <span class="eyebrow">Un parcours guidé</span>
+    <h2>Du fichier brut à une vision exploitable</h2>
+    <p>DataPilot automatise le travail répétitif et vous laisse la décision finale.</p>
+  </div>
+  <div class="process" data-stagger>
+    <article>
+      <span class="process-icon">01</span>
+      <div><h3>Vérifier</h3><p>Repérez les cellules vides, doublons et formats incohérents en quelques secondes.</p></div>
+    </article>
+    <article>
+      <span class="process-icon">02</span>
+      <div><h3>Corriger</h3><p>Validez uniquement les améliorations utiles. Chaque modification reste visible.</p></div>
+    </article>
+    <article>
+      <span class="process-icon">03</span>
+      <div><h3>Décider</h3><p>Consultez les tendances, créez vos graphiques et posez vos questions simplement.</p></div>
+    </article>
+  </div>
+</section>
+
+<section class="value-grid" data-reveal>
+  <article class="value-card value-wide">
+    <span class="value-kicker">Clarté immédiate</span>
+    <h2>Les informations importantes apparaissent en premier.</h2>
+    <p>Qualité du fichier, indicateurs clés et graphiques automatiques : vous savez rapidement ce qui mérite votre attention.</p>
+    <div class="mini-dashboard" aria-hidden="true">
+      <span><i style="height:42%"></i></span><span><i style="height:68%"></i></span><span><i style="height:54%"></i></span><span><i style="height:86%"></i></span><span><i style="height:72%"></i></span>
+    </div>
+  </article>
+  <article class="value-card">
+    <span class="value-icon" aria-hidden="true">✓</span>
+    <h3>Vous gardez le contrôle</h3>
+    <p>Aucune correction n’est appliquée sans votre confirmation.</p>
+  </article>
+  <article class="value-card dark-card">
+    <span class="value-icon" aria-hidden="true">↗</span>
+    <h3>Prêt à présenter</h3>
+    <p>Exportez vos données propres et vos graphiques en quelques clics.</p>
+  </article>
+</section>
+
+{% if projects %}
+<section class="recent" id="analyses" data-reveal>
+  <div class="section-head">
+    <div><span class="eyebrow">Votre espace</span><h2>Analyses récentes</h2><p>Retrouvez les fichiers déjà analysés sur cet ordinateur.</p></div>
+    <span class="section-count" aria-label="{{ projects|length }} analyses">{{ projects|length }}</span>
+  </div>
+  <div class="project-list">
+    {% for project in projects %}
+      <a href="{{ url_for('project', project_id=project.id) }}" class="project-row">
+        <span class="file-badge">{{ project.extension|replace('.', '')|upper }}</span>
+        <span class="project-info"><strong>{{ project.name|replace('_', ' ') }}</strong><small>{{ project.original_filename }}</small><time datetime="{{ project.updated_at }}">{{ project.date_label }}</time></span>
+        <span class="quality-mini">Qualité {{ project.quality_after or project.quality_before }}/100</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="final-cta" data-reveal>
+  <span class="eyebrow">Votre prochain fichier</span>
+  <h2>Prêt à comprendre ce que vos données racontent ?</h2>
+  <a class="btn dark" href="#importer">Commencer l’analyse <span aria-hidden="true">↑</span></a>
+</section>
+{% endblock %}

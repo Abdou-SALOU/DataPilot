@@ -1,0 +1,126 @@
+<aside
+  class="data-chatbot"
+  data-chatbot
+  data-chat-project="{{ project_id }}"
+  data-chat-open="{% if answer %}true{% else %}false{% endif %}"
+>
+  <button
+    class="chatbot-launcher"
+    type="button"
+    aria-label="Ouvrir l’assistant DataPilot"
+    aria-controls="datapilot-chat-panel"
+    aria-expanded="false"
+    data-chatbot-toggle
+  >
+    <span class="chatbot-launcher-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <path d="M5 5.75A2.75 2.75 0 0 1 7.75 3h8.5A2.75 2.75 0 0 1 19 5.75v6.5A2.75 2.75 0 0 1 16.25 15H11l-4.7 3.7c-.5.4-1.3.04-1.3-.6V15.3a2.75 2.75 0 0 1-2-2.65v-6.9Z"/>
+        <path d="M8 8h8M8 11h5"/>
+      </svg>
+    </span>
+    <span><strong>Besoin d’aide ?</strong><small>Demandez à DataPilot</small></span>
+  </button>
+
+  <section
+    class="chatbot-window"
+    id="datapilot-chat-panel"
+    role="dialog"
+    aria-label="Assistant DataPilot"
+    aria-modal="false"
+    data-chatbot-panel
+    hidden
+  >
+    <header class="chatbot-header">
+      <span class="chatbot-avatar" aria-hidden="true">D</span>
+      <span class="chatbot-heading">
+        <strong>DataPilot vous aide</strong>
+        <small><i aria-hidden="true"></i> Réponse immédiate</small>
+      </span>
+      <button type="button" class="chatbot-close" aria-label="Fermer l’assistant" data-chatbot-close>×</button>
+    </header>
+
+    <div class="chatbot-context">
+      <span>Fichier actif</span>
+      <strong>{{ metadata.name|replace('_', ' ') }}</strong>
+    </div>
+
+    <div
+      class="chatbot-messages"
+      data-answer-region
+      role="log"
+      aria-live="polite"
+      aria-relevant="additions text"
+    >
+      <div class="chat-turn chatbot-welcome" data-chatbot-welcome>
+        <article class="answer">
+          <small class="answer-label">Assistant DataPilot</small>
+          <p class="answer-summary">Bonjour ! Posez-moi une question simple sur votre fichier.</p>
+        </article>
+      </div>
+      {% if answer %}
+      <div class="chat-turn">
+        <p class="chat-question" dir="auto">{{ answer.question }}</p>
+        <article class="answer {% if not answer.ok %}uncertain{% endif %}">
+          <small class="answer-label">{% if answer.ok and answer.source == 'groq' %}Votre explication approfondie{% elif answer.ok %}Votre réponse{% else %}Réponse indisponible{% endif %}</small>
+          <p class="answer-summary" dir="auto">{{ answer.answer }}</p>
+          {% if answer.insights %}<section class="answer-points"><h3>À retenir</h3><ul>{% for item in answer.insights %}<li>{{ item }}</li>{% endfor %}</ul></section>{% endif %}
+          {% if answer.cautions %}<section class="answer-points cautions"><h3>À vérifier</h3><ul>{% for item in answer.cautions %}<li>{{ item }}</li>{% endfor %}</ul></section>{% endif %}
+          {% if answer.evidence %}<div class="evidence-list">{% for item in answer.evidence %}<div class="answer-evidence">Méthode · {{ item }}</div>{% endfor %}</div>{% endif %}
+          {% if answer.suggested_questions %}<div class="followups"><strong>Vous pouvez aussi demander :</strong>{% for item in answer.suggested_questions %}<button type="button" class="followup-question" data-question="{{ item }}">{{ item }}</button>{% endfor %}</div>{% endif %}
+        </article>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="chatbot-suggestions" aria-label="Questions suggérées">
+      <button type="button" data-chat-suggestion="Que faut-il retenir de ce fichier ?">À retenir</button>
+      <button type="button" data-chat-suggestion="Que dois-je vérifier en priorité ?">À vérifier</button>
+      <button type="button" data-chat-suggestion="Propose un graphique utile">Un graphique</button>
+    </div>
+
+    <form
+      action="{{ url_for('ask', project_id=project_id) }}"
+      method="post"
+      class="chat-form chatbot-form"
+      data-loading-form
+      data-async-chat
+      data-loading-text="Analyse de votre question…"
+    >
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <input type="hidden" name="section" value="{{ active_section }}">
+      <label class="sr-only" for="chatbot-question">Votre question sur ce fichier</label>
+      <div class="chatbot-compose">
+        <input
+          id="chatbot-question"
+          name="question"
+          maxlength="500"
+          placeholder="Posez une question sur ce fichier…"
+          autocomplete="off"
+          dir="auto"
+          required
+          data-chatbot-input
+        >
+        <button type="submit" aria-label="Envoyer la question" data-submit-button>
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path d="m4 4 17 8-17 8 2.5-7L15 12l-8.5-1L4 4Z"/>
+          </svg>
+        </button>
+      </div>
+      <p class="chatbot-privacy"><span aria-hidden="true">✓</span> Votre fichier reste sur cet ordinateur.</p>
+      <details class="chatbot-settings">
+        <summary>Options de réponse</summary>
+        <label>
+          <span>Niveau</span>
+          <select name="mode">
+            <option value="local" {% if not answer or answer.mode == 'local' %}selected{% endif %}>Réponse rapide</option>
+            <option value="groq" {% if answer and answer.mode == 'groq' %}selected{% endif %} {% if not (groq.configured and groq.sdk_installed) %}disabled{% endif %}>Réponse approfondie</option>
+          </select>
+        </label>
+      </details>
+      <div class="loading-state inline-loading" role="status" aria-live="polite" hidden>
+        <span class="loading-bar" aria-hidden="true"><i></i></span>
+        <strong>Analyse en cours…</strong>
+      </div>
+    </form>
+  </section>
+</aside>

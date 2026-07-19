@@ -1,0 +1,12 @@
+date,ville,produit,categorie,montant,quantite,satisfaction
+01/07/2026, Casablanca ,Café Premium,Boissons,"125,50",5,4
+02/07/2026,Casablanca,Thé Vert,Boissons,"89,90",3,5
+03/07/2026,Rabat,Café Premium,Boissons,"75,00",3,3
+04/07/2026,Marrakech,Biscuits Amande,Snacks,"210,00",12,4
+05/07/2026,Casablanca,Café Premium,Boissons,,4,2
+06/07/2026,Rabat,Biscuits Amande,Snacks,"95,50",5,
+06/07/2026,Rabat,Biscuits Amande,Snacks,"95,50",5,
+07/07/2026, ,Thé Vert,Boissons,"110,00",4,5
+08/07/2026,Casablanca,Pack Découverte,Coffrets,"350,00",7,4
+09/07/2026,Marrakech,Pack Découverte,Coffrets,"420,00",8,5
+

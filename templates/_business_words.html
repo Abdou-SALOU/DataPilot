@@ -1,0 +1,175 @@
+<section class="business-words" id="business-words" aria-labelledby="business-words-title">
+  <div class="panel-head rename-heading">
+    <div>
+      <span class="eyebrow">Des mots simples</span>
+      <h2 id="business-words-title">Simplifiez un nom compliqué</h2>
+      <p>Le fichier original reste intact. Vous vérifiez toujours le résultat avant de confirmer.</p>
+    </div>
+  </div>
+  <ol class="rename-steps" aria-label="Les trois étapes">
+    <li class="is-current"><span>1</span><strong>Choisissez</strong><small>un nom du fichier</small></li>
+    <li><span>2</span><strong>Vérifiez</strong><small>la proposition</small></li>
+    <li><span>3</span><strong>Confirmez</strong><small>le changement</small></li>
+  </ol>
+
+  {% if translation_notice %}
+  <div
+    class="translation-inline-notice {{ translation_notice.level|default('info') }}"
+    id="translation-notice"
+    role="{% if translation_notice.level == 'warn' %}alert{% else %}status{% endif %}"
+    tabindex="-1"
+  >
+    {{ translation_notice.text }}
+  </div>
+  {% endif %}
+
+  {% set form_state = translation_form or {} %}
+  <div class="translation-layout">
+    <form
+      action="{{ url_for('preview_dictionary_names', project_id=project_id) }}#translation-preview"
+      method="post"
+      class="simple-feature-form translation-builder"
+      data-translation-builder
+      data-loading-form
+      data-async-project
+      data-async-json
+      data-refresh-targets="#business-words"
+      data-focus-target="#translation-preview"
+      data-loading-text="Préparation…"
+    >
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <input type="hidden" name="language_name" value="{{ form_state.get('language_name') or 'Détection automatique' }}">
+
+      <div class="rename-main-fields">
+        <div class="rename-field">
+          <label for="translation-column">Quel nom est difficile à comprendre ?</label>
+          <select id="translation-column" name="column" required>
+            <option value="">Choisir dans le fichier…</option>
+            {% for option in translation_columns %}
+            <option
+              value="{{ option.name }}"
+              data-suggested-name="{{ option.suggested_name }}"
+              data-can-values="{{ 'true' if option.can_translate_values else 'false' }}"
+              data-reason="{{ option.reason }}"
+              {% if form_state.get('column') == option.name %}selected{% endif %}
+            >{{ option.label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <span class="rename-arrow" aria-hidden="true">→</span>
+
+        <div class="rename-field">
+          <label for="translation-name">Quel nom préférez-vous ?</label>
+          <input id="translation-name" name="display_name" maxlength="100" dir="auto" placeholder="Proposé automatiquement" value="{{ form_state.get('display_name', '') }}" required>
+          <small>Vous pouvez modifier la proposition.</small>
+        </div>
+      </div>
+
+      <p class="translation-help" data-translation-help role="status" hidden></p>
+
+      <label class="rename-values-option" data-rename-values-option hidden>
+        <input type="checkbox" name="include_values" value="1" data-include-values {% if form_state.get('include_values') %}checked{% endif %}>
+        <span>
+          <strong>Renommer aussi les valeurs</strong>
+          <small>Facultatif · par exemple « cash » → « Espèces »</small>
+        </span>
+      </label>
+
+      <div class="rename-submit-row">
+        <button class="btn primary" type="submit" data-submit-button data-ready-button {% if not form_state.get('column') or not form_state.get('display_name') %}disabled{% endif %}>Vérifier le résultat <span aria-hidden="true">→</span></button>
+        <p class="form-reassurance"><span aria-hidden="true">✓</span> Rien ne change avant votre confirmation.</p>
+      </div>
+    </form>
+
+    {% if translation_draft %}
+    <section class="translation-preview" id="translation-preview" tabindex="-1" aria-labelledby="translation-preview-title" aria-live="polite">
+      <div class="translation-preview-head">
+        <div>
+          <span class="eyebrow">Dernière vérification</span>
+          <h3 id="translation-preview-title">Est-ce bien le résultat souhaité ?</h3>
+          {% if translation_draft.suggestion_message %}<p>{{ translation_draft.suggestion_message }}</p>{% endif %}
+        </div>
+      </div>
+      <form
+        action="{{ url_for('apply_dictionary_names', project_id=project_id) }}"
+        method="post"
+        class="translation-apply-form"
+        data-loading-form
+        data-async-project
+        data-async-json
+        data-refresh-targets="#business-words"
+        data-focus-target="#business-words-title"
+        data-loading-text="Application…"
+      >
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <input type="hidden" name="column" value="{{ translation_draft.column }}">
+        <input type="hidden" name="language_name" value="{{ translation_draft.language_name }}">
+        {% if translation_draft.include_values %}<input type="hidden" name="include_values" value="1">{% endif %}
+        <input type="hidden" name="value_count" value="{{ translation_draft['values']|length }}">
+        <div class="translation-title-preview" lang="{{ translation_draft.language_code }}" dir="{{ translation_draft.direction }}">
+          <span><small>Avant</small><strong>{{ translation_draft.current_name }}</strong></span>
+          <i aria-hidden="true">→</i>
+          <label for="confirmed-display-name"><small>Après</small><input id="confirmed-display-name" name="display_name" maxlength="100" value="{{ translation_draft.display_name }}" dir="auto" required></label>
+        </div>
+        {% if translation_draft['values'] %}
+        <p class="translation-summary">{{ counted_fr(translation_draft['values']|length, 'catégorie', 'catégories') }}, présentes dans {{ counted_fr(translation_draft.affected_rows, 'ligne', 'lignes') }}. Modifiez uniquement les noms que vous voulez clarifier.</p>
+        <div class="translation-table-wrap" tabindex="0" role="region" aria-label="Aperçu des catégories à renommer">
+          <table class="translation-table">
+            <thead><tr><th scope="col">Avant</th><th scope="col">Après</th><th scope="col">Lignes</th></tr></thead>
+            <tbody>
+              {% for row in translation_draft['values'] %}
+              <tr>
+                <th scope="row" dir="auto">{{ row.source }}<input type="hidden" name="source_{{ loop.index0 }}" value="{{ row.source }}"></th>
+                <td><label class="sr-only" for="translated-value-{{ loop.index0 }}">Nouveau nom pour {{ row.source }}</label><input id="translated-value-{{ loop.index0 }}" name="value_label_{{ loop.index0 }}" maxlength="160" value="{{ row.display }}" dir="auto" data-translated-value></td>
+                <td>{{ row.count }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <label class="merge-choice"><input type="checkbox" name="confirm_merge" value="1"> Si plusieurs anciens noms reçoivent le même nouveau nom, les regrouper dans les graphiques et les exports.</label>
+        {% endif %}
+        <p class="translation-integrity">Le fichier original reste intact.</p>
+        <div class="translation-actions">
+          <button class="btn primary" type="submit" data-submit-button>Confirmer le changement</button>
+          <a class="btn secondary" href="#business-words">Modifier</a>
+        </div>
+      </form>
+    </section>
+    {% endif %}
+  </div>
+
+  {% if dictionary_entries %}
+  <section class="dictionary-saved" aria-labelledby="dictionary-saved-title">
+    <h3 id="dictionary-saved-title">Noms déjà modifiés</h3>
+    <div class="dictionary-list">
+      {% for entry in dictionary_entries %}
+      <article>
+        <div class="dictionary-name-change">
+          <code>{{ entry.column }}</code>
+          <span aria-hidden="true">→</span>
+          <strong lang="{{ entry.language_code|default('und') }}" dir="{{ entry.direction|default('auto') }}">{{ entry.display_name or entry.label_fr or entry.label_ar or entry.column }}{% if entry.unit %} · {{ entry.unit }}{% endif %}</strong>
+          {% if entry.label_ar and entry.label_ar != (entry.display_name or entry.label_fr) %}<small lang="ar" dir="rtl">{{ entry.label_ar }}</small>{% endif %}
+          {% if entry.value_labels %}<small>{{ counted_fr(entry.value_labels|length, 'valeur renommée', 'valeurs renommées') }}</small>{% endif %}
+        </div>
+        <form
+          action="{{ url_for('delete_dictionary_entry', project_id=project_id, entry_id=entry.id) }}"
+          method="post"
+          data-confirm="Rétablir le nom d’origine « {{ entry.column }} » ?"
+          data-loading-form
+          data-async-project
+          data-async-json
+          data-refresh-targets="#business-words"
+          data-focus-target="#business-words-title"
+          data-loading-text="Rétablissement…"
+        >
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <button type="submit" class="link-button">Rétablir</button>
+        </form>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</section>
