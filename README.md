@@ -2,6 +2,16 @@
 
 MVP indépendant de préparation et de compréhension des données pour les PME.
 
+> **En bref :** une application web qui aide une PME à passer de fichiers bruts (CSV, Excel, JSON) à des données exploitables : profilage et score qualité, corrections proposées puis validées par l'utilisateur, tableaux de bord de KPI et exports Excel. **116 tests automatisés.**
+>
+> **Stack :** Python, Pandas, Flask, Celery, Redis, Docker · **Portfolio :** [abdou-salou.github.io](https://abdou-salou.github.io/fr)
+
+| 1. Comprendre : score qualité, lignes, cellules vides, doublons | 2. Corriger : corrections proposées, appliquées seulement si cochées |
+|---|---|
+| ![Vue d'ensemble DataPilot](docs/screenshots/datapilot-overview.png) | ![Corrections proposées par DataPilot](docs/screenshots/datapilot-cleaning.png) |
+
+*Captures réalisées avec le fichier de démonstration `demo/ventes_pme.csv`.*
+
 ## Fonctions disponibles
 
 - import local CSV, Excel et JSON ;
