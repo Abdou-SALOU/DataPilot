@@ -1,0 +1,307 @@
+﻿id_vente;date_vente;ville;produit;categorie;quantite;prix_unitaire;montant;note_satisfaction
+V-0001;17/06/2026;Rabat;Huile d'olive 1 L;Épicerie;3;89,00;267,00;5
+V-0002;15/07/2026;Casablanca;Dattes Medjool 500 g;Épicerie;5;75,00;375,00;2
+V-0003;27/06/2026;Tanger;Huile d'olive 1 L;Épicerie;3;89,00;267,00;2
+V-0004;11/07/2026;Tanger;Dattes Medjool 500 g;Épicerie;6;75,00;450,00;4
+V-0005;26/09/2026;Fès;Jus d'orange 1 L;Boissons;3;18,00;54,00;2
+V-0006;18/08/2026;Marrakech;Jus d'orange 1 L;Boissons;1;18,00;18,00;5
+V-0007;23/08/2026;Casablanca;Café moulu 250 g;Épicerie;6;45,00;270,00;4
+V-0008;14/06/2026;Tanger;Jus d'orange 1 L;Boissons;4;18,00;72,00;5
+V-0009;17/09/2026;Tanger;Huile d'olive 1 L;Épicerie;4;89,00;356,00;4
+V-0010;16/06/2026;Fès;Eau minérale 6x1,5 L;Boissons;5;36,00;180,00;3
+V-0011;23/06/2026;Fès;  Café moulu 250 g ;Épicerie;1;45,00;45,00;5
+V-0012;16/07/2026;Casablanca;Dattes Medjool 500 g;Épicerie;2;75,00;150,00;5
+V-0013;18/08/2026;Fès;Dattes Medjool 500 g;Épicerie;6;75,00;450,00;5
+V-0014;26/09/2026;Tanger;Shampooing argan;Hygiène;5;68,00;340,00;5
+V-0015;27/08/2026;Casablanca;Savon noir;Hygiène;3;25,00;75,00;2
+V-0016;20/09/2026;Fès;Café moulu 250 g;Épicerie;6;45,00;270,00;5
+V-0017;09/09/2026;Tanger;Jus d'orange 1 L;Boissons;2;18,00;36,00;5
+V-0018;22/06/2026;Marrakech;Eau minérale 6x1,5 L;Boissons;5;36,00;180,00;4
+V-0019;15/08/2026;Tanger;Dattes Medjool 500 g;Épicerie;1;75,00;75,00;3
+V-0020;16/06/2026;Marrakech;Eau minérale 6x1,5 L;Boissons;6;36,00;216,00;5
+V-0021;07/09/2026;Rabat;Jus d'orange 1 L;Boissons;1;18,00;18,00;5
+V-0022;01/09/2026;Fès;  Thé vert 200 g ;Épicerie;1;32,00;32,00;2
+V-0023;04/06/2026;Fès;Savon noir;Hygiène;2;25,00;50,00;4
+V-0024;01/08/2026;Fès;Jus d'orange 1 L;Boissons;2;18,00;36,00;5
+V-0025;08/09/2026;Fès;Café moulu 250 g;Épicerie;5;45,00;225,00;3
+V-0026;14/07/2026;Rabat;Shampooing argan;Hygiène;1;68,00;68,00;4
+V-0027;26/07/2026;Fès;Eau minérale 6x1,5 L;Boissons;4;36,00;144,00;3
+V-0028;04/09/2026;Casablanca;Eau minérale 6x1,5 L;Boissons;1;36,00;36,00;2
+V-0029;12/06/2026;Casablanca;Jus d'orange 1 L;Boissons;6;18,00;108,00;5
+V-0030;10/09/2026;Marrakech;Jus d'orange 1 L;Boissons;6;18,00;108,00;2
+V-0031;19/07/2026;Rabat;Dattes Medjool 500 g;Épicerie;4;75,00;300,00;3
+V-0032;11/09/2026;Fès;Eau minérale 6x1,5 L;Boissons;5;36,00;180,00;9
+V-0033;13/06/2026;Rabat;Huile d'olive 1 L;Épicerie;5;89,00;445,00;3
+V-0034;18/06/2026;Tanger;Thé vert 200 g;Épicerie;6;32,00;192,00;3
+V-0035;22/06/2026;Rabat;Dattes Medjool 500 g;Épicerie;6;75,00;450,00;3
+V-0036;22/07/2026;Tanger;Café moulu 250 g;Épicerie;2;45,00;90,00;4
+V-0037;14/06/2026;Tanger;Eau minérale 6x1,5 L;Boissons;5;36,00;180,00;4
+V-0038;06/08/2026;Tanger;Café moulu 250 g;Épicerie;3;45,00;135,00;5
+V-0039;15/07/2026;Marrakech;Eau minérale 6x1,5 L;Boissons;3;36,00;108,00;5
+V-0040;17/08/2026;Casablanca;Dattes Medjool 500 g;Épicerie;1;75,00;75,00;3
+V-0041;03/09/2026;Marrakech;Savon noir;Hygiène;1;25,00;25,00;5
+V-0042;12/07/2026;Marrakech;Café moulu 250 g;Épicerie;1;45,00;45,00;3
+V-0043;23/08/2026;Fès;Huile d'olive 1 L;Épicerie;5;89,00;445,00;3
+V-0044;09/07/2026;Casablanca;Shampooing argan;Hygiène;5;68,00;340,00;4
+V-0045;06/06/2026;Casablanca;Huile d'olive 1 L;Épicerie;4;89,00;356,00;4
+V-0046;21/06/2026;Fès;Café moulu 250 g;Épicerie;6;45,00;270,00;4
+V-0047;27/06/2026;Marrakech;Shampooing argan;Hygiène;5;68,00;340,00;4
+V-0048;09/06/2026;Casablanca;Café moulu 250 g;Épicerie;3;45,00;135,00;5
+V-0049;01/06/2026;;Shampooing argan;Hygiène;-4;68,00;272,00;3
+V-0050;04/06/2026;Fès;Thé vert 200 g;Épicerie;3;32,00;96,00;4
+V-0051;20/06/2026;Tanger;Jus d'orange 1 L;Boissons;4;18,00;72,00;4
+V-0052;15/09/2026;Casablanca;Savon noir;Hygiène;5;25,00;125,00;4
+V-0053;10/08/2026;Casablanca;Shampooing argan;Hygiène;4;68,00;272,00;5
+V-0054;23/08/2026;Marrakech;Thé vert 200 g;Épicerie;3;32,00;96,00;2
+V-0055;11/06/2026;Fès;Shampooing argan;Hygiène;4;68,00;272,00;4
+V-0056;02/06/2026;Rabat;Savon noir;Hygiène;5;25,00;N/A;2
+V-0057;05/08/2026;Fès;Huile d'olive 1 L;Épicerie;1;89,00;89,00;4
+V-0058;19/07/2026;Marrakech;Thé vert 200 g;Épicerie;4;32,00;128,00;5
+V-0059;08/09/2026;Rabat;Eau minérale 6x1,5 L;Boissons;4;36,00;144,00;3
+V-0060;01/09/2026;Marrakech;Café moulu 250 g;Épicerie;5;45,00;225,00;3
+V-0061;01/08/2026;Fès;Savon noir;Hygiène;1;25,00;25,00;5
+V-0062;11/07/2026;Fès;Eau minérale 6x1,5 L;Boissons;3;36,00;108,00;2
+V-0063;02/08/2026;Marrakech;Café moulu 250 g;Épicerie;5;45,00;225,00;4
+V-0064;27/06/2026;Rabat;Thé vert 200 g;Épicerie;6;32,00;192,00;5
+V-0065;22/07/2026;Tanger;Thé vert 200 g;Épicerie;2;32,00;64,00;4
+V-0066;27/08/2026;Marrakech;  Savon noir ;Hygiène;5;25,00;125,00;3
+V-0067;15/09/2026;Fès;Jus d'orange 1 L;Boissons;3;18,00;54,00;5
+V-0068;06/09/2026;Rabat;Shampooing argan;Hygiène;2;68,00;136,00;5
+V-0069;27/09/2026;Casablanca;Thé vert 200 g;Épicerie;-3;32,00;96,00;3
+V-0070;12/08/2026;Rabat;Huile d'olive 1 L;Épicerie;3;89,00;267,00;2
+V-0071;07/08/2026;Fès;Thé vert 200 g;Épicerie;5;32,00;160,00;2
+V-0072;18/07/2026;Fes;Eau minérale 6x1,5 L;Boissons;4;36,00;144,00;2
+V-0073;24/09/2026;Marrakech;Huile d'olive 1 L;Épicerie;2;89,00;178,00;4
+V-0074;24/07/2026;Rabat;Shampooing argan;Hygiène;1;68,00;68,00;4
+V-0075;10/08/2026;Rabat;Shampooing argan;Hygiène;5;68,00;340,00;5
+V-0076;21/06/2026;Fès;Savon noir;Hygiène;6;25,00;150,00;5
+V-0077;26/07/2026;Fès;Eau minérale 6x1,5 L;Boissons;3;36,00;108,00;2
+V-0078;18/07/2026;Rabat;Café moulu 250 g;Épicerie;3;45,00;135,00;2
+V-0079;22/06/2026;Marrakech;Huile d'olive 1 L;Épicerie;5;89,00;445,00;2
+V-0080;07/07/2026;Fès;Jus d'orange 1 L;Boissons;3;18,00;54,00;3
+V-0081;11/09/2026;Casablanca;Café moulu 250 g;Épicerie;1;45,00;45,00;2
+V-0082;20/08/2026;Casablanca;Eau minérale 6x1,5 L;Boissons;3;36,00;108,00;4
+V-0083;04/07/2026;Marrakech;Dattes Medjool 500 g;Épicerie;4;75,00;300,00;5
+V-0084;03/06/2026;Tanger;Jus d'orange 1 L;Boissons;1;18,00;18,00;4
+V-0085;08/07/2026;Marrakech;Shampooing argan;Hygiène;6;68,00;408,00;5
+V-0086;24/09/2026;Tanger;  Jus d'orange 1 L ;Boissons;3;18,00;54,00;4
+V-0087;26/09/2026;Rabat;Café moulu 250 g;Épicerie;2;45,00;90,00;4
+V-0088;27/09/2026;Rabat;Jus d'orange 1 L;Boissons;4;18,00;72,00;3
+V-0089;19/07/2026;Tanger;Dattes Medjool 500 g;Épicerie;6;75,00;450,00;4
+V-0090;11/08/2026;Tanger;Jus d'orange 1 L;Boissons;1;18,00;N/A;4
+V-0091;21/08/2026;Rabat;Café moulu 250 g;Épicerie;5;45,00;225,00;4
+V-0092;25/06/2026;Marrakesh;Café moulu 250 g;Épicerie;5;45,00;225,00;4
+V-0093;13/09/2026;Casablanca;Dattes Medjool 500 g;Épicerie;6;75,00;450,00;4
+V-0094;04/09/2026;Fès;Eau minérale 6x1,5 L;Boissons;3;36,00;108,00;3
+V-0095;21/08/2026;Casablanca;Eau minérale 6x1,5 L;Boissons;3;36,00;108,00;5
+V-0096;09/08/2026;Rabat;Café moulu 250 g;Épicerie;1;45,00;45,00;4
+V-0097;28/09/2026;Marrakech;Eau minérale 6x1,5 L;Boissons;4;36,00;144,00;2
+V-0098;21/06/2026;;Thé vert 200 g;Épicerie;2;32,00;64,00;4
+V-0099;26/09/2026;Fès;Thé vert 200 g;Épicerie;2;32,00;64,00;4
+V-0100;18/07/2026;Fes;Jus d'orange 1 L;Boissons;1;18,00;18,00;2
+V-0101;11/07/2026;Tanger;Huile d'olive 1 L;Épicerie;2;89,00;178,00;3
+V-0102;10/06/2026;Fès;Café moulu 250 g;Épicerie;6;45,00;270,00;5
+V-0103;01/08/2026;Tanger;Café moulu 250 g;Épicerie;1;45,00;45,00;2
+V-0104;24/07/2026;Tanger;Café moulu 250 g;Épicerie;5;45,00;225,00;4
+V-0105;11/09/2026;Marrakech;Jus d'orange 1 L;Boissons;3;18,00;54,00;5
+V-0106;02/09/2026;Rabat;Jus d'orange 1 L;Boissons;3;18,00;54,00;2
+V-0107;09/09/2026;Rabat;Dattes Medjool 500 g;Épicerie;3;75,00;225,00;4
+V-0108;27/09/2026;Marrakech;Shampooing argan;Hygiène;5;68,00;340,00;3
+V-0109;28/06/2026;Fès;Thé vert 200 g;Épicerie;4;32,00;128,00;4
+V-0110;03/08/2026;Tanger;Dattes Medjool 500 g;Épicerie;5;75,00;375,00;4
+V-0111;06/06/2026;Fès;Jus d'orange 1 L;Boissons;3;18,00;54,00;3
+V-0112;17/09/2026;Casablanca;Shampooing argan;Hygiène;5;68,00;340,00;3
+V-0113;08/07/2026;Tanger;Thé vert 200 g;Épicerie;4;32,00;128,00;3
+V-0114;25/09/2026;Rabat;Savon noir;Hygiène;3;25,00;75,00;4
+V-0115;13/07/2026;Rabat;Jus d'orange 1 L;Boissons;6;18,00;108,00;3
+V-0116;26/06/2026;Casablanca;Café moulu 250 g;Épicerie;2;45,00;90,00;4
+V-0117;05/08/2026;Fès;Shampooing argan;Hygiène;2;68,00;136,00;4
+V-0118;06/07/2026;Casablanca;Café moulu 250 g;Épicerie;4;45,00;180,00;3
+V-0119;21/09/2026;Fès;Café moulu 250 g;Épicerie;4;45,00;180,00;2
+V-0120;17/08/2026;Fès;Shampooing argan;Hygiène;2;68,00;136,00;2
+V-0121;24/09/2026;Rabat;Dattes Medjool 500 g;Épicerie;6;75,00;450,00;4
+V-0122;17/06/2026;Tanger;Café moulu 250 g;Épicerie;6;45,00;270,00;2
+V-0123;12/08/2026;Marrakech;Thé vert 200 g;Épicerie;1;32,00;32,00;2
+V-0124;07/06/2026;Tanger;Café moulu 250 g;Épicerie;5;45,00;225,00;5
+V-0125;08/07/2026;Tanger;Savon noir;Hygiène;2;25,00;50,00;3
+V-0126;18/09/2026;Tanger;Jus d'orange 1 L;Boissons;2;18,00;36,00;5
+V-0127;07/08/2026;Tanger;Jus d'orange 1 L;Boissons;6;18,00;108,00;5
+V-0128;24/07/2026;Casablanca;Huile d'olive 1 L;Épicerie;2;89,00;178,00;2
+V-0129;22/07/2026;Casablanca;Jus d'orange 1 L;Boissons;6;18,00;108,00;3
+V-0130;14/07/2026;Tanger;Savon noir;Hygiène;6;25,00;150,00;2
+V-0131;21/08/2026;Marrakech;Café moulu 250 g;Épicerie;6;45,00;270,00;4
+V-0132;16/09/2026;Marrakech;Eau minérale 6x1,5 L;Boissons;1;36,00;36,00;4
+V-0133;04/07/2026;Fès;Dattes Medjool 500 g;Épicerie;2;75,00;150,00;3
+V-0134;13/06/2026;Fès;Jus d'orange 1 L;Boissons;4;18,00;72,00;4
+V-0135;03/09/2026;Tanger;Shampooing argan;Hygiène;6;68,00;408,00;4
+V-0136;10/06/2026;Casablanca;Huile d'olive 1 L;Épicerie;3;89,00;267,00;2
+V-0137;15/06/2026;Tanger;Huile d'olive 1 L;Épicerie;5;89,00;445,00;5
+V-0138;01/07/2026;Marrakech;Dattes Medjool 500 g;Épicerie;5;75,00;375,00;3
+V-0139;13/06/2026;Rabat;Thé vert 200 g;Épicerie;1;32,00;32,00;4
+V-0140;24/06/2026;Fès;Thé vert 200 g;Épicerie;1;32,00;32,00;2
+V-0141;05/08/2026;Tanger;Jus d'orange 1 L;Boissons;6;18,00;108,00;3
+V-0142;15/07/2026;Tanger;Jus d'orange 1 L;Boissons;6;18,00;108,00;3
+V-0143;02/09/2026;Rabat;Jus d'orange 1 L;Boissons;4;18,00;72,00;3
+V-0144;25/06/2026;Fès;Dattes Medjool 500 g;Épicerie;2;75,00;150,00;5
+V-0145;17/06/2026;Tanger;Eau minérale 6x1,5 L;Boissons;4;36,00;144,00;3
+V-0146;02/09/2026;Rabat;Eau minérale 6x1,5 L;Boissons;6;36,00;216,00;4
+V-0147;11/08/2026;Tanger;Savon noir;Hygiène;5;25,00;125,00;2
+V-0148;28/07/2026;Fès;Jus d'orange 1 L;Boissons;5;18,00;90,00;2
+V-0149;19/06/2026;Fès;Jus d'orange 1 L;Boissons;2;18,00;36,00;3
+V-0150;26/06/2026;Casablanca;Dattes Medjool 500 g;Épicerie;4;75,00;300,00;5
+V-0151;08/07/2026;Casablanca;Eau minérale 6x1,5 L;Boissons;1;36,00;36,00;4
+V-0152;09/08/2026;Casablanca;Café moulu 250 g;Épicerie;5;45,00;225,00;4
+V-0153;07/06/2026;Tanger;Café moulu 250 g;Épicerie;1;45,00;45,00;2
+V-0154;15/06/2026;Rabat;Jus d'orange 1 L;Boissons;6;18,00;108,00;5
+V-0155;03/07/2026;Casablanca;Thé vert 200 g;Épicerie;3;32,00;96,00;4
+V-0156;10/06/2026;Tanger;Savon noir;Hygiène;1;25,00;25,00;4
+V-0157;24/07/2026;Fès;Huile d'olive 1 L;Épicerie;6;89,00;534,00;3
+V-0158;18/08/2026;Rabat;Dattes Medjool 500 g;Épicerie;1;75,00;75,00;5
+V-0159;08/06/2026;Casablanca;Dattes Medjool 500 g;Épicerie;1;75,00;75,00;5
+V-0160;03/09/2026;Fès;Eau minérale 6x1,5 L;Boissons;5;36,00;180,00;3
+V-0161;06/07/2026;Fès;Café moulu 250 g;Épicerie;2;45,00;90,00;4
+V-0162;21/07/2026;Tanger;Eau minérale 6x1,5 L;Boissons;3;36,00;108,00;2
+V-0163;03/07/2026;Fès;Thé vert 200 g;Épicerie;3;32,00;96,00;3
+V-0164;05/08/2026;Rabat;Dattes Medjool 500 g;Épicerie;6;75,00;450,00;5
+V-0165;01/09/2026;Casablanca;Huile d'olive 1 L;Épicerie;2;89,00;178,00;5
+V-0166;19/08/2026;Fès;Eau minérale 6x1,5 L;Boissons;6;36,00;216,00;4
+V-0167;22/06/2026;Marrakech;Huile d'olive 1 L;Épicerie;6;89,00;534,00;3
+V-0168;08/08/2026;Fès;Huile d'olive 1 L;Épicerie;4;89,00;356,00;3
+V-0169;18/06/2026;Casablanca;Shampooing argan;Hygiène;6;68,00;408,00;4
+V-0170;15/06/2026;Rabat;Café moulu 250 g;Épicerie;6;45,00;270,00;5
+V-0171;17/09/2026;Casablanca;Café moulu 250 g;Épicerie;5;45,00;225,00;2
+V-0172;20/08/2026;Rabat;Café moulu 250 g;Épicerie;1;45,00;45,00;5
+V-0173;15/08/2026;Rabat;Shampooing argan;Hygiène;1;68,00;68,00;5
+V-0174;19/06/2026;Casablanca;Thé vert 200 g;Épicerie;4;32,00;128,00;3
+V-0175;26/06/2026;Tanger;Jus d'orange 1 L;Boissons;4;18,00;72,00;4
+V-0176;24/08/2026;Marrakech;Dattes Medjool 500 g;Épicerie;4;75,00;300,00;5
+V-0177;10/08/2026;;Eau minérale 6x1,5 L;Boissons;4;36,00;144,00;2
+V-0178;07/08/2026;Tanger;Thé vert 200 g;Épicerie;2;32,00;64,00;3
+V-0179;26/06/2026;Rabat;Jus d'orange 1 L;Boissons;2;18,00;36,00;5
+V-0180;11/09/2026;Rabat;Café moulu 250 g;Épicerie;5;45,00;225,00;4
+V-0181;09/08/2026;Tanger;Eau minérale 6x1,5 L;Boissons;6;36,00;216,00;3
+V-0182;10/06/2026;Fès;Café moulu 250 g;Épicerie;5;45,00;225,00;3
+V-0183;28/09/2026;Fès;Shampooing argan;Hygiène;2;68,00;136,00;3
+V-0184;21/09/2026;Casablanca;Dattes Medjool 500 g;Épicerie;4;75,00;300,00;4
+V-0185;17/08/2026;Fès;Thé vert 200 g;Épicerie;5;32,00;160,00;4
+V-0186;23/08/2026;Fès;Eau minérale 6x1,5 L;Boissons;2;36,00;72,00;4
+V-0187;17/07/2026;Casblanca;Jus d'orange 1 L;Boissons;4;18,00;72,00;5
+V-0188;20/08/2026;Rabat;Eau minérale 6x1,5 L;Boissons;4;36,00;144,00;5
+V-0189;28/06/2026;Casablanca;Jus d'orange 1 L;Boissons;6;18,00;108,00;3
+V-0190;16/09/2026;Tanger;Savon noir;Hygiène;2;25,00;50,00;3
+V-0191;07/08/2026;Casablanca;Eau minérale 6x1,5 L;Boissons;5;36,00;180,00;2
+V-0192;07/09/2026;Casablanca;Huile d'olive 1 L;Épicerie;1;89,00;89,00;5
+V-0193;17/06/2026;Tanger;Jus d'orange 1 L;Boissons;6;18,00;108,00;3
+V-0194;01/06/2026;Casablanca;Jus d'orange 1 L;Boissons;3;18,00;54,00;4
+V-0195;21/09/2026;Casablanca;Café moulu 250 g;Épicerie;4;45,00;180,00;2
+V-0196;28/09/2026;Marrakech;Savon noir;Hygiène;5;25,00;125,00;3
+V-0197;12/07/2026;rabat;Huile d'olive 1 L;Épicerie;1;89,00;89,00;5
+V-0198;18/09/2026;Rabat;Dattes Medjool 500 g;Épicerie;1;75,00;75,00;2
+V-0199;15/09/2026;Casablanca;Thé vert 200 g;Épicerie;6;32,00;192,00;5
+V-0200;15/09/2026;Marrakech;Dattes Medjool 500 g;Épicerie;1;75,00;75,00;2
+V-0201;06/09/2026;Casablanca;Thé vert 200 g;Épicerie;4;32,00;128,00;4
+V-0202;04/08/2026;Rabat;Savon noir;Hygiène;4;25,00;100,00;2
+V-0203;20/08/2026;Marrakesh;Café moulu 250 g;Épicerie;5;45,00;225,00;5
+V-0204;08/08/2026;Casablanca;Huile d'olive 1 L;Épicerie;6;89,00;534,00;5
+V-0205;25/08/2026;Marrakech;Huile d'olive 1 L;Épicerie;5;89,00;445,00;5
+V-0206;24/07/2026;Fès;Shampooing argan;Hygiène;2;68,00;136,00;9
+V-0207;18/08/2026;Fès;Shampooing argan;Hygiène;-1;68,00;68,00;5
+V-0208;24/08/2026;Rabat;Shampooing argan;Hygiène;4;68,00;272,00;5
+V-0209;27/08/2026;Marrakech;Café moulu 250 g;Épicerie;3;45,00;135,00;4
+V-0210;08/06/2026;Rabat;Huile d'olive 1 L;Épicerie;5;89,00;445,00;4
+V-0211;21/06/2026;Marrakech;Jus d'orange 1 L;Boissons;6;18,00;108,00;5
+V-0212;15/09/2026;Casablanca;Eau minérale 6x1,5 L;Boissons;5;36,00;180,00;4
+V-0213;15/08/2026;Fès;Eau minérale 6x1,5 L;Boissons;6;36,00;216,00;5
+V-0214;25/08/2026;Tanger;Jus d'orange 1 L;Boissons;1;18,00;18,00;4
+V-0215;01/08/2026;Tanger;Shampooing argan;Hygiène;4;68,00;272,00;5
+V-0216;01/08/2026;Fès;Thé vert 200 g;Épicerie;5;32,00;160,00;2
+V-0217;14/08/2026;Tanger;Huile d'olive 1 L;Épicerie;3;89,00;267,00;4
+V-0218;07/07/2026;Casablanca;Shampooing argan;Hygiène;1;68,00;68,00;2
+V-0219;02/08/2026;Fès;Savon noir;Hygiène;2;25,00;50,00;5
+V-0220;20/06/2026;Marrakech;Huile d'olive 1 L;Épicerie;6;89,00;534,00;3
+V-0221;08/06/2026;Casablanca;Huile d'olive 1 L;Épicerie;4;89,00;356,00;2
+V-0222;28/09/2026;Casablanca;Huile d'olive 1 L;Épicerie;5;89,00;445,00;3
+V-0223;24/06/2026;Marrakech;Dattes Medjool 500 g;Épicerie;5;75,00;375,00;5
+V-0224;22/09/2026;rabat;Jus d'orange 1 L;Boissons;5;18,00;90,00;2
+V-0225;05/08/2026;Fès;Eau minérale 6x1,5 L;Boissons;3;36,00;108,00;3
+V-0226;02/06/2026;Tanger;Eau minérale 6x1,5 L;Boissons;6;36,00;216,00;5
+V-0227;21/07/2026;Casablanca;Dattes Medjool 500 g;Épicerie;4;75,00;300,00;4
+V-0228;14/07/2026;Marrakech;Huile d'olive 1 L;Épicerie;2;89,00;178,00;5
+V-0229;11/07/2026;Marrakech;Café moulu 250 g;Épicerie;2;45,00;90,00;2
+V-0230;15/09/2026;Casablanca;Huile d'olive 1 L;Épicerie;2;89,00;178,00;4
+V-0231;28/06/2026;Marrakech;Eau minérale 6x1,5 L;Boissons;1;36,00;36,00;2
+V-0232;08/07/2026;Marrakech;Shampooing argan;Hygiène;5;68,00;340,00;4
+V-0233;18/06/2026;Fès;Huile d'olive 1 L;Épicerie;3;89,00;267,00;2
+V-0234;18/08/2026;Rabat;  Savon noir ;Hygiène;4;25,00;100,00;3
+V-0235;18/08/2026;Casablanca;Café moulu 250 g;Épicerie;2;45,00;90,00;5
+V-0236;21/09/2026;Marrakech;Shampooing argan;Hygiène;5;68,00;340,00;3
+V-0237;12/09/2026;Casablanca;Savon noir;Hygiène;2;25,00;50,00;3
+V-0238;02/08/2026;Rabat;Shampooing argan;Hygiène;5;68,00;340,00;4
+V-0239;02/08/2026;Rabat;Dattes Medjool 500 g;Épicerie;6;75,00;450,00;4
+V-0240;26/06/2026;rabat;Dattes Medjool 500 g;Épicerie;4;75,00;300,00;4
+V-0241;22/09/2026;Casblanca;Huile d'olive 1 L;Épicerie;3;89,00;267,00;5
+V-0242;10/07/2026;Casablanca;Jus d'orange 1 L;Boissons;3;18,00;54,00;2
+V-0243;03/07/2026;Rabat;Shampooing argan;Hygiène;4;68,00;272,00;2
+V-0244;07/06/2026;Marrakech;Thé vert 200 g;Épicerie;3;32,00;96,00;2
+V-0245;17/09/2026;Marrakech;Shampooing argan;Hygiène;4;68,00;272,00;3
+V-0246;27/09/2026;Tanger;Thé vert 200 g;Épicerie;3;32,00;96,00;5
+V-0247;21/08/2026;Marrakech;Thé vert 200 g;Épicerie;6;32,00;192,00;3
+V-0248;21/08/2026;Tanger;Shampooing argan;Hygiène;5;68,00;340,00;2
+V-0249;15/06/2026;Fès;Thé vert 200 g;Épicerie;4;32,00;128,00;2
+V-0250;28/09/2026;Tanger;Dattes Medjool 500 g;Épicerie;2;75,00;150,00;2
+V-0251;09/06/2026;Rabat;Jus d'orange 1 L;Boissons;1;18,00;18,00;5
+V-0252;07/08/2026;Rabat;Savon noir;Hygiène;6;25,00;150,00;5
+V-0253;02/09/2026;Marrakech;Thé vert 200 g;Épicerie;1;32,00;32,00;3
+V-0254;05/07/2026;Fès;Eau minérale 6x1,5 L;Boissons;6;36,00;216,00;4
+V-0255;25/09/2026;Marrakech;Café moulu 250 g;Épicerie;3;45,00;135,00;5
+V-0256;14/07/2026;Casablanca;Eau minérale 6x1,5 L;Boissons;5;36,00;180,00;5
+V-0257;28/07/2026;Fès;Eau minérale 6x1,5 L;Boissons;3;36,00;108,00;5
+V-0258;23/07/2026;Marrakech;Shampooing argan;Hygiène;3;68,00;204,00;2
+V-0259;09/07/2026;Casablanca;Savon noir;Hygiène;6;25,00;150,00;5
+V-0260;24/07/2026;Marrakech;Café moulu 250 g;Épicerie;2;45,00;90,00;5
+V-0261;02/08/2026;Marrakech;Dattes Medjool 500 g;Épicerie;4;75,00;300,00;2
+V-0262;27/09/2026;Marrakesh;Thé vert 200 g;Épicerie;3;32,00;96,00;2
+V-0263;17/09/2026;Marrakech;Eau minérale 6x1,5 L;Boissons;5;36,00;180,00;5
+V-0264;23/08/2026;Casablanca;Huile d'olive 1 L;Épicerie;1;89,00;89,00;2
+V-0265;11/08/2026;Rabat;Café moulu 250 g;Épicerie;2;45,00;90,00;4
+V-0266;22/08/2026;Rabat;Shampooing argan;Hygiène;1;68,00;68,00;4
+V-0267;15/06/2026;Fès;Dattes Medjool 500 g;Épicerie;3;75,00;225,00;3
+V-0268;13/06/2026;Rabat;Shampooing argan;Hygiène;3;68,00;204,00;5
+V-0269;12/09/2026;Fès;Huile d'olive 1 L;Épicerie;5;89,00;445,00;2
+V-0270;02/06/2026;Casblanca;Thé vert 200 g;Épicerie;1;32,00;32,00;4
+V-0271;01/09/2026;;Café moulu 250 g;Épicerie;1;45,00;45,00;2
+V-0272;25/06/2026;Rabat;Huile d'olive 1 L;Épicerie;4;89,00;356,00;3
+V-0273;08/06/2026;Marrakech;Dattes Medjool 500 g;Épicerie;2;75,00;150,00;5
+V-0274;02/08/2026;Fès;Thé vert 200 g;Épicerie;2;32,00;64,00;5
+V-0275;17/06/2026;Tanger;Dattes Medjool 500 g;Épicerie;6;75,00;450,00;5
+V-0276;10/09/2026;Rabat;Huile d'olive 1 L;Épicerie;1;89,00;89,00;4
+V-0277;01/07/2026;Casablanca;Huile d'olive 1 L;Épicerie;1;89,00;89,00;3
+V-0278;02/08/2026;Casablanca;Savon noir;Hygiène;1;25,00;25,00;3
+V-0279;10/07/2026;Tanger;Thé vert 200 g;Épicerie;1;32,00;32,00;3
+V-0280;14/09/2026;Casablanca;Dattes Medjool 500 g;Épicerie;1;75,00;75,00;4
+V-0281;27/07/2026;Casablanca;Jus d'orange 1 L;Boissons;2;18,00;36,00;2
+V-0282;15/06/2026;Fès;Café moulu 250 g;Épicerie;4;45,00;180,00;2
+V-0283;28/09/2026;Tanger;Café moulu 250 g;Épicerie;5;45,00;225,00;2
+V-0284;20/07/2026;Fès;Jus d'orange 1 L;Boissons;4;18,00;72,00;3
+V-0285;28/06/2026;Rabat;Savon noir;Hygiène;5;25,00;125,00;3
+V-0286;27/07/2026;Tanger;Dattes Medjool 500 g;Épicerie;1;75,00;75,00;2
+V-0287;12/06/2026;Rabat;Eau minérale 6x1,5 L;Boissons;1;36,00;36,00;2
+V-0288;01/09/2026;Tanger;Shampooing argan;Hygiène;4;68,00;272,00;4
+V-0289;18/08/2026;Casablanca;Jus d'orange 1 L;Boissons;3;18,00;54,00;5
+V-0290;27/08/2026;Casablanca;Eau minérale 6x1,5 L;Boissons;2;36,00;72,00;5
+V-0291;26/07/2026;Marrakech;Dattes Medjool 500 g;Épicerie;4;75,00;300,00;5
+V-0292;18/06/2026;Rabat;Savon noir;Hygiène;3;25,00;75,00;4
+V-0293;22/07/2026;Tanger;Huile d'olive 1 L;Épicerie;4;89,00;356,00;4
+V-0294;14/09/2026;Rabat;Savon noir;Hygiène;6;25,00;150,00;3
+V-0295;28/07/2026;Casablanca;Thé vert 200 g;Épicerie;6;32,00;192,00;3
+V-0296;21/07/2026;Casablanca;Shampooing argan;Hygiène;2;68,00;136,00;4
+V-0297;06/07/2026;Tanger;Café moulu 250 g;Épicerie;4;45,00;180,00;2
+V-0298;13/06/2026;Casablanca;Jus d'orange 1 L;Boissons;1;18,00;18,00;5
+V-0299;04/08/2026;Casablanca;Thé vert 200 g;Épicerie;3;32,00;96,00;5
+V-0300;08/07/2026;Rabat;Thé vert 200 g;Épicerie;1;32,00;32,00;4
+V-0110;03/08/2026;Tanger;Dattes Medjool 500 g;Épicerie;5;75,00;375,00;4
+V-0279;10/07/2026;Tanger;Thé vert 200 g;Épicerie;1;32,00;32,00;3
+V-0208;24/08/2026;Rabat;Shampooing argan;Hygiène;4;68,00;272,00;5
+V-0297;06/07/2026;Tanger;Café moulu 250 g;Épicerie;4;45,00;180,00;2
+V-0202;04/08/2026;Rabat;Savon noir;Hygiène;4;25,00;100,00;2
+V-0172;20/08/2026;Rabat;Café moulu 250 g;Épicerie;1;45,00;45,00;5

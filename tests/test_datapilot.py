@@ -14,6 +14,38 @@ def sample_frame():
     })
 
 
+def test_business_brief_uses_observed_sales_and_discloses_limits():
+    frame = pd.DataFrame({
+        "produit": ["Café", "Café", "Thé", "Thé"],
+        "montant": ["100,50", "50", "-10", "inconnu"],
+    })
+    brief = datapilot.build_business_brief(frame)
+    assert brief["available"] is True
+    assert brief["total"] == 140.5
+    assert brief["used_rows"] == 3
+    assert brief["excluded_rows"] == 1
+    assert "Café" in brief["findings"][0]["detail"]
+    assert any("bénéfice" in item for item in brief["limitations"])
+    assert any("négatif" in item for item in brief["limitations"])
+
+
+def test_business_brief_does_not_invent_sales_for_generic_dataset():
+    brief = datapilot.build_business_brief(pd.DataFrame({"age": [20, 30]}))
+    assert brief["available"] is False
+    invoices = datapilot.build_business_brief(pd.DataFrame({"total_ttc": [100]}), source_kind="invoices")
+    assert invoices["available"] is False
+
+
+def test_expense_brief_does_not_recommend_promoting_an_expense():
+    brief = datapilot.build_business_brief(
+        pd.DataFrame({"produit": ["Loyer", "Électricité"], "montant": [500, 100]}),
+        source_kind="captured_expenses",
+    )
+    assert brief["total_label"] == "Dépenses déclarées"
+    assert brief["total"] == 600
+    assert all("promotion" not in action for action in brief["actions"])
+
+
 def test_read_csv_detects_separator(tmp_path: Path):
     path = tmp_path / "ventes.csv"
     path.write_text("ville;montant\nCasablanca;10\nRabat;20\n", encoding="utf-8")

@@ -1,15 +1,16 @@
 (function () {
   'use strict';
+  const t = (text) => (window.DP_I18N && window.DP_I18N[text]) || text;
 
   const palette = [
-    '#2563eb',
-    '#0f172a',
-    '#60a5fa',
-    '#64748b',
-    '#93c5fd',
-    '#334155',
-    '#bfdbfe',
-    '#94a3b8'
+    '#0071e3',
+    '#1f8a70',
+    '#e8870e',
+    '#6e6e73',
+    '#0b3d6e',
+    '#c9a227',
+    '#5aa9e6',
+    '#a5662d'
   ];
 
   const instances = new Map();
@@ -116,12 +117,12 @@
 
     const chart = normalizedChart(rawChart);
     if (!chart) {
-      showChartError(canvas, 'Ce graphique ne contient pas assez de valeurs fiables pour être affiché.');
+      showChartError(canvas, t('Ce graphique ne contient pas assez de valeurs fiables pour être affiché.'));
       return null;
     }
 
     if (typeof window.Chart === 'undefined') {
-      showChartError(canvas, 'Le module de graphiques est indisponible pour le moment.');
+      showChartError(canvas, t('Le module de graphiques est indisponible pour le moment.'));
       return null;
     }
 
@@ -130,8 +131,8 @@
     const background = circular
       ? chart.values.map((_value, index) => palette[index % palette.length])
       : line
-        ? 'rgba(37, 99, 235, .10)'
-        : '#2563eb';
+        ? 'rgba(0, 113, 227, .08)'
+        : '#0071e3';
 
     try {
       const instance = new window.Chart(canvas, {
@@ -139,14 +140,14 @@
         data: {
           labels: chart.labels,
           datasets: [{
-            label: chart.dataset_label || 'Valeur',
+            label: chart.dataset_label || t('Valeur'),
             data: chart.values,
             backgroundColor: background,
-            borderColor: line ? '#2563eb' : circular ? '#ffffff' : '#2563eb',
+            borderColor: line ? '#0071e3' : circular ? '#ffffff' : '#0071e3',
             borderWidth: circular ? 3 : line ? 2.5 : 0,
-            borderRadius: circular || line ? 0 : 6,
+            borderRadius: circular || line ? 0 : 8,
             maxBarThickness: 44,
-            pointBackgroundColor: '#2563eb',
+            pointBackgroundColor: '#0071e3',
             pointBorderColor: '#ffffff',
             pointBorderWidth: 2,
             pointRadius: line ? 3 : 0,
@@ -158,6 +159,7 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          locale: window.DP_LANG === 'en' ? 'en-US' : 'fr-FR',
           indexAxis: chart.index_axis || 'x',
           animation: prefersReducedMotion()
             ? false
@@ -175,12 +177,12 @@
                 usePointStyle: true,
                 boxWidth: 8,
                 padding: 16,
-                color: '#475569',
+                color: '#424245',
                 font: { family: 'Inter', size: 11 }
               }
             },
             tooltip: {
-              backgroundColor: '#0a0a0a',
+              backgroundColor: 'rgba(29, 29, 31, .92)',
               padding: 12,
               cornerRadius: 8,
               titleFont: { family: 'Inter' },
@@ -193,9 +195,9 @@
                 y: {
                   beginAtZero: true,
                   border: { display: false },
-                  grid: { color: 'rgba(15, 23, 42, .07)' },
+                  grid: { color: 'rgba(0, 0, 0, .06)' },
                   ticks: {
-                    color: '#64748b',
+                    color: '#6e6e73',
                     font: { family: 'Inter', size: 11 }
                   }
                 },
@@ -203,7 +205,7 @@
                   border: { display: false },
                   grid: { display: false },
                   ticks: {
-                    color: '#64748b',
+                    color: '#6e6e73',
                     maxRotation: 35,
                     minRotation: 0,
                     font: { family: 'Inter', size: 11 }
@@ -218,7 +220,7 @@
       canvas.removeAttribute('aria-busy');
       return instance;
     } catch (_error) {
-      showChartError(canvas, 'Le graphique ne peut pas être affiché pour le moment.');
+      showChartError(canvas, t('Le graphique ne peut pas être affiché pour le moment.'));
       return null;
     }
   }
@@ -251,12 +253,12 @@
 
     if (dashboard.error) {
       findAllInRoot(root, 'canvas[id^="chart"]').forEach((canvas) => {
-        showChartError(canvas, 'Les données de ce graphique sont temporairement illisibles.');
+        showChartError(canvas, t('Les données de ce graphique sont temporairement illisibles.'));
       });
     }
     if (custom.error) {
       findAllInRoot(root, 'canvas[id^="customChart"]').forEach((canvas) => {
-        showChartError(canvas, 'Les données de ce graphique sont temporairement illisibles.');
+        showChartError(canvas, t('Les données de ce graphique sont temporairement illisibles.'));
       });
     }
 
@@ -324,13 +326,13 @@
         renderDataPilotChart(canvas, jobs.get(canvas));
       }
       if (!instances.has(canvas)) {
-        showChartError(canvas, 'Le graphique doit être affiché avant de pouvoir être téléchargé.');
+        showChartError(canvas, t('Le graphique doit être affiché avant de pouvoir être téléchargé.'));
         return;
       }
 
       const saveImage = (blob) => {
         if (!blob) {
-          showChartError(canvas, 'Le téléchargement de ce graphique est indisponible pour le moment.');
+          showChartError(canvas, t('Le téléchargement de ce graphique est indisponible pour le moment.'));
           return;
         }
         const link = document.createElement('a');
@@ -347,7 +349,7 @@
       try {
         canvas.toBlob(saveImage, 'image/png', 1);
       } catch (_error) {
-        showChartError(canvas, 'Le téléchargement de ce graphique est indisponible pour le moment.');
+        showChartError(canvas, t('Le téléchargement de ce graphique est indisponible pour le moment.'));
       }
     };
 

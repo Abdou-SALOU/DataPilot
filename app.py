@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import io
+import hashlib
 import json
 import os
 import re
@@ -39,13 +40,18 @@ from werkzeug.utils import secure_filename
 import datapilot
 import advanced_features
 import groq_analysis
+import i18n
 import invoice_features
 import name_translation
+import pipeline
 import rename_features
+import sales_capture
 import task_queue
 
 
 BASE_DIR = Path(__file__).resolve().parent
+DEMO_DATASET = BASE_DIR / "demo" / "comptoir_atlas_ventes.xlsx"
+DEMO_NAME = "Comptoir Atlas · ventes"
 STORAGE_ROOT = Path(os.environ.get("DATAPILOT_STORAGE", BASE_DIR / "storage"))
 PROJECT_RE = re.compile(r"^[0-9a-f]{32}$")
 CHART_ID_RE = re.compile(r"^[0-9a-f]{12}$")
@@ -62,7 +68,7 @@ INVOICE_FIELD_COLUMNS = {
 app = Flask(__name__)
 app.secret_key = os.environ.get("DATAPILOT_SECRET_KEY") or secrets.token_hex(32)
 app.config.update(
-    MAX_CONTENT_LENGTH=20 * 1024 * 1024,
+    MAX_CONTENT_LENGTH=50 * 1024 * 1024,
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
 )
@@ -318,9 +324,141 @@ def protect_posts():
     return None
 
 
+@app.before_request
+def protect_network_access():
+    """Bloque l'accès réseau tant qu'un code n'a pas été configuré et saisi."""
+    if request.remote_addr in {"127.0.0.1", "::1", None}:
+        return None
+    code = os.environ.get("DATAPILOT_ACCESS_CODE", "")
+    if len(code) < 12:
+        abort(403, "Configurez DATAPILOT_ACCESS_CODE (12 caractères minimum) pour l'accès mobile.")
+    if request.endpoint in {"network_access", "static"}:
+        return None
+    fingerprint = hashlib.sha256(code.encode("utf-8")).hexdigest()
+    if session.get("network_access") != fingerprint:
+        return redirect(url_for("network_access", next=request.path))
+    return None
+
+
+@app.route("/access", methods=["GET", "POST"])
+def network_access():
+    if request.method == "POST":
+        code = os.environ.get("DATAPILOT_ACCESS_CODE", "")
+        supplied = request.form.get("access_code", "")
+        if len(code) >= 12 and secrets.compare_digest(supplied, code):
+            session["network_access"] = hashlib.sha256(code.encode("utf-8")).hexdigest()
+            destination = request.form.get("next", "/")
+            return redirect(destination if destination.startswith("/") and not destination.startswith("//") else "/")
+        flash("Code incorrect. Réessayez.", "warn")
+    return render_template("network_access.html", next=request.values.get("next", "/"))
+
+
+# Textes affichés par le JavaScript (messages d'attente, d'erreur, assistant).
+JS_STRINGS = [
+    "Aucun fichier sélectionné", "Préparation du téléchargement…", "Proposé automatiquement",
+    "Traitement en cours…", "Analyse en cours…", "Graphique suggéré", "Élément", "Valeur",
+    "Voir les valeurs du graphique", "Ajouter à mes graphiques", "Ajout en cours…", "Ajouté à mes graphiques",
+    "Le graphique ne peut pas être affiché pour le moment.", "Votre réponse", "Votre explication approfondie",
+    "Réponse indisponible", "La réponse est indisponible.", "À retenir", "À vérifier", "Méthode",
+    "Vous pouvez aussi demander :", "Analyse en cours", "DataPilot prépare votre réponse",
+    "La réponse prend trop de temps. Réessayez dans un instant.",
+    "La connexion avec DataPilot a été interrompue. Votre page et votre fichier sont restés intacts.",
+    "Le graphique n’a pas pu être ajouté.", "Le fichier dépasse la taille acceptée.",
+    "La réponse reçue est incomplète. Rechargez la page puis réessayez.",
+    "La réponse reçue est illisible. Rechargez la page puis réessayez.",
+    "L’affichage n’a pas pu être actualisé.", "Les nouvelles informations n’ont pas pu être affichées.",
+    "La modification n’a pas pu être appliquée.",
+    "La modification a été enregistrée, mais l’affichage n’a pas pu être actualisé.",
+    "La connexion a été interrompue. Vos données sont restées intactes.",
+    "DataPilot a reçu une réponse inattendue. Réessayez dans un instant.",
+    "Le suivi est momentanément indisponible. Vous pouvez lancer l’analyse locale ci-dessous.",
+    "Ce graphique ne contient pas assez de valeurs fiables pour être affiché.",
+    "Le module de graphiques est indisponible pour le moment.",
+    "Les données de ce graphique sont temporairement illisibles.",
+    "Le graphique doit être affiché avant de pouvoir être téléchargé.",
+    "Le téléchargement de ce graphique est indisponible pour le moment.",
+    "Nombre de lignes",
+]
+
+
+def _format_number(value: object, decimals: int | None = None) -> str:
+    """Formate un nombre selon la langue : 12 345,67 (fr) ou 12,345.67 (en)."""
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return str(value)
+    if decimals is None:
+        decimals = 0 if number.is_integer() else 2
+    text = f"{number:,.{decimals}f}"
+    if i18n.current_language() == "fr":
+        text = text.replace(",", " ").replace(".", ",")
+    return text
+
+
+def _format_when(value: object) -> str:
+    try:
+        moment = datetime.fromisoformat(str(value).replace("Z", "+00:00")).astimezone()
+    except (TypeError, ValueError):
+        return str(value or "")
+    return moment.strftime("%d/%m/%Y %H:%M" if i18n.current_language() == "fr" else "%b %d, %Y %H:%M")
+
+
+def _format_size(value: object) -> str:
+    try:
+        size = float(value)
+    except (TypeError, ValueError):
+        return ""
+    for unit in ("o" if i18n.current_language() == "fr" else "B", "Ko" if i18n.current_language() == "fr" else "KB", "Mo" if i18n.current_language() == "fr" else "MB"):
+        if size < 1024 or unit in {"Mo", "MB"}:
+            return f"{_format_number(size, 0 if size >= 100 or unit in {'o', 'B'} else 1)} {unit}"
+        size /= 1024
+    return str(value)
+
+
+def _format_duration(value: object) -> str:
+    try:
+        millis = float(value)
+    except (TypeError, ValueError):
+        return ""
+    return f"{_format_number(millis, 0)} ms" if millis < 1000 else f"{_format_number(millis / 1000, 2)} s"
+
+
+app.jinja_env.filters.update({
+    "tr": lambda value: i18n.gettext(value),
+    "thousands": lambda value: _format_number(value, 0),
+    "money": lambda value: _format_number(value, 2),
+    "number": lambda value: _format_number(value),
+    "filesize": _format_size,
+    "duration": _format_duration,
+    "when": _format_when,
+})
+
+
 @app.context_processor
 def inject_helpers():
-    return {"csrf_token": csrf_token, "counted_fr": counted_fr}
+    lang = i18n.current_language()
+    catalog = {text: i18n.gettext(text, "en") for text in JS_STRINGS} if lang == "en" else {}
+    return {
+        "csrf_token": csrf_token,
+        "counted_fr": counted_fr,
+        "_": i18n.gettext,
+        "lang": lang,
+        "js_catalog": catalog,
+    }
+
+
+@app.route("/lang/<code>")
+def set_language(code: str):
+    """Mémorise la langue d'affichage et revient sur la page d'origine."""
+    if code not in i18n.SUPPORTED_LANGUAGES:
+        abort(404)
+    destination = request.args.get("next", "/") or "/"
+    if not destination.startswith("/") or destination.startswith("//"):
+        destination = "/"
+    destination = destination.rstrip("?") or "/"
+    response = redirect(destination)
+    response.set_cookie(i18n.COOKIE_NAME, code, max_age=60 * 60 * 24 * 365, samesite="Lax", httponly=True)
+    return response
 
 
 def project_dir(project_id: str) -> Path:
@@ -846,6 +984,7 @@ def apply_cleaning_batch(project_id: str, action_ids: list[str], label: str) -> 
         "quality_after": datapilot.profile_dataframe(cleaned)["quality_score"],
     })
     write_metadata(project_id, metadata)
+    refresh_pipeline(project_id, "recipe" if label.startswith("Modèle") else "cleaning")
     return len(log)
 
 
@@ -985,7 +1124,7 @@ def render_chart_studio_fragment(
         chart_options=localize_chart_options(
             datapilot.chart_builder_options(frame), dictionary_entries
         ),
-        custom_charts=build_project_custom_charts(project_id, frame, dictionary_entries),
+        custom_charts=translated_view_items(build_project_custom_charts(project_id, frame, dictionary_entries)),
         chart_notice=notice,
     )
 
@@ -1055,6 +1194,7 @@ def build_project_view(project_id: str) -> dict:
         "profile": profile,
         "suggestions": datapilot.suggest_cleaning(frame),
         "dashboard": dashboard,
+        "business_brief": datapilot.build_business_brief(frame, source_kind=read_metadata(project_id).get("source_kind")),
         "chart_options": localize_chart_options(datapilot.chart_builder_options(frame), dictionary_entries),
         "custom_charts": build_project_custom_charts(project_id, frame, dictionary_entries),
     }
@@ -1066,11 +1206,148 @@ def build_project_view(project_id: str) -> dict:
     return view
 
 
+def refresh_pipeline(project_id: str, trigger: str) -> dict | None:
+    """Rejoue Bronze → contrôles → Silver → Gold. Un échec n'interrompt jamais l'analyse."""
+    directory = project_dir(project_id)
+    raw = directory / "raw.csv"
+    if not raw.exists():
+        return None
+    metadata = read_metadata(project_id)
+    source = next(iter(sorted(directory.glob("source.*"))), None)
+    documents = directory / "documents"
+    if source is None and documents.exists():
+        source = next(iter(sorted(documents.iterdir())), None)
+    try:
+        return pipeline.run_pipeline(
+            directory,
+            source_path=source,
+            bronze_path=raw,
+            silver=load_frame(project_id),
+            trigger=trigger,
+            applied_actions=[str(item.get("action", "")) for item in metadata.get("transformations", [])],
+        )
+    except Exception:  # pragma: no cover - journalisé, l'interface reste utilisable
+        app.logger.exception("Pipeline DataPilot en échec pour %s", project_id)
+        return None
+
+
+def merged_check_rows(run: dict | None) -> list[dict]:
+    """Aligne chaque règle du contrat entre Bronze et Silver pour la comparaison."""
+    if not run:
+        return []
+    bronze = {item["id"]: item for item in run.get("checks", {}).get("bronze", [])}
+    rank = {"fail": 0, "warn": 1, "pass": 2}
+    rows = []
+    for item in run.get("checks", {}).get("silver", []):
+        before = bronze.get(item["id"], item)
+        rows.append({"bronze": before, "silver": item, "rank": (rank[item["status"]], rank[before["status"]])})
+    rows.sort(key=lambda row: row["rank"])
+    return rows
+
+
+def lakehouse_layers(project_id: str) -> list[dict]:
+    schemas = pipeline.table_schemas(project_dir(project_id))
+    by_name = {item["name"]: item for item in schemas}
+    gold = [item for item in schemas if item["layer"] == "gold"]
+    layers = []
+    for key, label, description in (
+        ("bronze", "Bronze", "Brut, tel qu’ingéré, avec colonnes d’audit."),
+        ("silver", "Silver", "Typé, corrigé, conforme au contrat."),
+    ):
+        table = by_name.get(key)
+        if table:
+            layers.append({
+                "key": key, "label": label, "description": description,
+                "rows": table["rows"], "bytes": table["bytes"],
+                "tables": [{"name": f"{key}/data.parquet", "rows": table["rows"], "columns": table["columns"]}],
+            })
+    if gold:
+        layers.append({
+            "key": "gold", "label": "Gold", "description": "Agrégats métier prêts pour la BI.",
+            "rows": sum(item["rows"] for item in gold), "bytes": sum(item["bytes"] for item in gold),
+            "tables": [{"name": item["name"], "rows": item["rows"], "columns": item["columns"]} for item in gold],
+        })
+    return layers
+
+
+def sql_examples(project_id: str) -> list[dict]:
+    """Propose des requêtes adaptées aux tables réellement publiées."""
+    tables = pipeline.available_tables(project_dir(project_id))
+    examples = []
+    gold_by = sorted(name for name in tables if name.startswith("gold_") and "_by_" in name)
+    if gold_by:
+        examples.append({"label": "Top produits", "query": f"SELECT *\nFROM {gold_by[0]}\nORDER BY 2 DESC\nLIMIT 10"})
+    if "gold_monthly_trend" in tables:
+        examples.append({"label": "Tendance mensuelle", "query": "SELECT month, total, transactions, mom_change_pct\nFROM gold_monthly_trend\nORDER BY month"})
+    if "gold_column_profile" in tables:
+        examples.append({"label": "Profil des colonnes", "query": "SELECT column_name, data_type, completeness_pct, distinct_values\nFROM gold_column_profile\nORDER BY completeness_pct"})
+    examples.append({"label": "Contrôle des doublons", "query": "SELECT COUNT(*) AS bronze_rows,\n       (SELECT COUNT(*) FROM silver) AS silver_rows,\n       COUNT(*) - (SELECT COUNT(*) FROM silver) AS removed_rows\nFROM bronze"})
+    examples.append({"label": "Aperçu Silver", "query": "SELECT *\nFROM silver\nLIMIT 20"})
+    return examples
+
+
+def gold_charts(project_id: str) -> list[dict]:
+    """Graphiques métier lus dans la couche Gold : ce que regarde d'abord un décideur."""
+    directory = project_dir(project_id)
+    tables = pipeline.available_tables(directory)
+    charts: list[dict] = []
+    by_dimension = sorted(name for name in tables if name.startswith("gold_") and "_by_" in name)
+    if by_dimension:
+        name = by_dimension[0]
+        frame = pipeline.read_table(directory, name)
+        if {"total"} <= set(frame.columns) and len(frame) >= 2:
+            top = frame.sort_values("total", ascending=False).head(10)
+            measure, dimension = name[len("gold_"):].split("_by_", 1)
+            charts.append({
+                "type": "bar", "title": f"Total {measure} par {dimension}",
+                "subtitle": f"Table Gold · {name} · top 10",
+                "labels": [str(value) for value in top.iloc[:, 0]],
+                "values": [round(float(value), 2) for value in top["total"]],
+                "dataset_label": "Total", "color": "#0071e3", "index_axis": "y", "source": "gold",
+            })
+    if "gold_monthly_trend" in tables:
+        frame = pipeline.read_table(directory, "gold_monthly_trend")
+        if len(frame) >= 2:
+            charts.append({
+                "type": "line", "title": "Tendance mensuelle",
+                "subtitle": "Table Gold · gold_monthly_trend",
+                "labels": [str(value) for value in frame["month"]],
+                "values": [round(float(value), 2) for value in frame["total"]],
+                "dataset_label": "Total", "color": "#1f8a70", "index_axis": "x", "source": "gold",
+            })
+    for chart in charts:
+        chart["explanation"] = explain_chart_values(chart)
+    return charts
+
+
+def translated_view_items(items: list[dict]) -> list[dict]:
+    """Traduit titres et explications des graphiques sans toucher aux valeurs."""
+    if i18n.current_language() == "fr":
+        return items
+    translated = []
+    for chart in items:
+        item = dict(chart)
+        for key in ("title", "subtitle", "dataset_label"):
+            if item.get(key):
+                item[key] = i18n.gettext(item[key])
+        item["labels"] = [i18n.gettext(label) if label == "Non renseigné" else label for label in item.get("labels", [])]
+        if item.get("explanation"):
+            explanation = dict(item["explanation"])
+            explanation["points"] = [i18n.gettext(point) for point in explanation.get("points", [])]
+            explanation["caution"] = i18n.gettext(explanation.get("caution", ""))
+            item["explanation"] = explanation
+        translated.append(item)
+    return translated
+
+
 def render_project(
     project_id: str,
     answer: dict | None = None,
     translation_draft: dict | None = None,
     active_section: str = "overview",
+    sql_query: str | None = None,
+    sql_result: dict | None = None,
+    sql_error: str | None = None,
 ):
     if active_section not in PROJECT_SECTIONS:
         abort(404)
@@ -1079,6 +1356,14 @@ def render_project(
     frame = view["frame"]
     display_frame = view["display_frame"]
     dictionary_entries = view["dictionary_entries"]
+    directory = project_dir(project_id)
+    run = pipeline.latest_run(directory)
+    if run is None:
+        run = refresh_pipeline(project_id, "backfill")
+    dashboard = dict(view["dashboard"])
+    business_charts = gold_charts(project_id) if active_section == "overview" and run else []
+    dashboard["charts"] = translated_view_items((business_charts + list(dashboard.get("charts", [])))[:6])
+    examples = sql_examples(project_id) if active_section == "sql" else []
     return render_template(
         "project.html",
         project_id=project_id,
@@ -1088,9 +1373,10 @@ def render_project(
         suggestions=view["suggestions"],
         preview=datapilot.dataframe_preview(display_frame),
         display_columns=[str(column) for column in display_frame.columns],
-        dashboard=view["dashboard"],
+        dashboard=dashboard,
+        business_brief=view["business_brief"],
         chart_options=view["chart_options"],
-        custom_charts=view["custom_charts"],
+        custom_charts=translated_view_items(view["custom_charts"]),
         saved_kpis=calculate_saved_kpis(
             display_frame,
             read_project_items(project_id, "kpis.json"),
@@ -1106,41 +1392,67 @@ def render_project(
         groq=groq_analysis.status(),
         active_section=active_section,
         project_sections=PROJECT_SECTIONS,
+        pipeline_run=run,
+        runs=pipeline.list_runs(directory, limit=8) if active_section == "pipeline" else [],
+        contract=pipeline.read_contract(directory) if active_section == "pipeline" else {},
+        check_rows=merged_check_rows(run) if active_section == "cleaning" else [],
+        layers=lakehouse_layers(project_id) if active_section == "pipeline" else [],
+        table_schemas=pipeline.table_schemas(directory) if active_section in {"pipeline", "sql"} else [],
+        sql_examples=examples,
+        sql_query=sql_query if sql_query is not None else (examples[0]["query"] if examples else ""),
+        sql_result=sql_result,
+        sql_error=sql_error,
     )
 
 
 PROJECT_SECTIONS = {
     "overview": {
-        "number": "1",
-        "label": "Comprendre",
-        "description": "Voir les chiffres importants",
-        "guidance": "Regardez les quatre chiffres ci-dessous. Ils résument la qualité et la taille de votre fichier.",
+        "icon": "overview",
+        "label": "Vue d’ensemble",
+        "description": "Indicateurs et synthèse",
+        "title": "Vue d’ensemble",
+        "guidance": "Calculs locaux, méthode et limites visibles.",
         "next": "cleaning",
-        "next_label": "Vérifier les corrections",
     },
     "cleaning": {
-        "number": "2",
-        "label": "Corriger",
-        "description": "Réparer les erreurs proposées",
-        "guidance": "DataPilot prépare les corrections. Vous choisissez celles que vous voulez appliquer.",
-        "next": "names",
-        "next_label": "Simplifier les noms",
+        "icon": "quality",
+        "label": "Qualité & corrections",
+        "description": "Contrat et nettoyage",
+        "title": "Qualité & corrections",
+        "guidance": "Chaque règle est évaluée sur la couche Bronze (brute) puis Silver (nettoyée).",
+        "next": "pipeline",
     },
-    "names": {
-        "number": "3",
-        "label": "Clarifier",
-        "description": "Changer les noms compliqués",
-        "guidance": "Choisissez un nom difficile à lire. DataPilot vous propose aussitôt une version plus simple.",
+    "pipeline": {
+        "icon": "pipeline",
+        "label": "Pipeline",
+        "description": "Couches et lineage",
+        "title": "Pipeline de données",
+        "guidance": "Ingestion, validation, transformation et publication, rejouables et traçables.",
+        "next": "sql",
+    },
+    "sql": {
+        "icon": "sql",
+        "label": "SQL",
+        "description": "Interroger les tables",
+        "title": "Console SQL (DuckDB)",
+        "guidance": "Requêtes SELECT en lecture seule sur Bronze, Silver et Gold. 200 lignes maximum affichées.",
         "next": "charts",
-        "next_label": "Créer un graphique",
     },
     "charts": {
-        "number": "4",
-        "label": "Visualiser",
-        "description": "Voir les données en images",
-        "guidance": "Choisissez ce que vous voulez comparer. DataPilot prépare le calcul et le graphique.",
+        "icon": "charts",
+        "label": "Graphiques",
+        "description": "Créer des visuels",
+        "title": "Créez un graphique simplement",
+        "guidance": "Choisissez un élément. DataPilot s’occupe du calcul et de la présentation.",
+        "next": "names",
+    },
+    "names": {
+        "icon": "labels",
+        "label": "Libellés",
+        "description": "Renommer pour le métier",
+        "title": "Simplifiez un nom compliqué",
+        "guidance": "Le fichier original reste intact. Vous vérifiez toujours le résultat avant de confirmer.",
         "next": None,
-        "next_label": "Télécharger le résultat",
     },
 }
 
@@ -1213,15 +1525,46 @@ def dictionary_fragment_response(
     return json_response(payload, status)
 
 
+def showcase_stats() -> dict | None:
+    """Chiffres du schéma d'accueil, lus dans la dernière exécution de la démo."""
+    STORAGE_ROOT.mkdir(parents=True, exist_ok=True)
+    candidates = []
+    for path in STORAGE_ROOT.glob("*/project.json"):
+        try:
+            metadata = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if isinstance(metadata, dict) and metadata.get("is_demo"):
+            candidates.append((str(metadata.get("updated_at", "")), path.parent))
+    for _updated, directory in sorted(candidates, reverse=True):
+        runs = pipeline.list_runs(directory, limit=50)
+        if not runs:
+            continue
+        first, last = runs[-1], runs[0]
+        try:
+            source_name = json.loads((directory / "project.json").read_text(encoding="utf-8")).get("original_filename")
+        except (OSError, json.JSONDecodeError):
+            source_name = None
+        return {
+            "source_name": source_name or last["input"]["file"],
+            "bronze_rows": first["rows"]["bronze"],
+            "checks_total": last["quality"]["silver"]["total"],
+            "bronze_score": first["quality"]["bronze"]["score"],
+            "silver_score": max(run["quality"]["silver"]["score"] for run in runs),
+            "gold_tables": len(last.get("gold_tables", [])),
+        }
+    return None
+
+
 @app.route("/")
 def index():
-    return render_template("index.html", projects=recent_projects())
+    return render_template("index.html", projects=recent_projects(), showcase=showcase_stats())
 
 
 @app.route("/demo", methods=["POST"])
 def demo():
     """Crée un espace de démonstration à partir du fichier PME fourni."""
-    source = BASE_DIR / "demo" / "ventes_pme.csv"
+    source = DEMO_DATASET if DEMO_DATASET.exists() else BASE_DIR / "demo" / "ventes_pme.csv"
     if not source.exists():
         flash("Le fichier de démonstration est indisponible.", "warn")
         return redirect(url_for("index"))
@@ -1230,15 +1573,17 @@ def demo():
     directory = project_dir(project_id)
     directory.mkdir(parents=True, exist_ok=False)
     try:
-        original_path = directory / "source.csv"
+        original_path = directory / f"source{source.suffix.lower()}"
         shutil.copy2(source, original_path)
         frame = datapilot.read_dataset(original_path)
         frame.to_csv(directory / "raw.csv", index=False, encoding="utf-8")
         profile = datapilot.profile_dataframe(frame)
         metadata = {
-            "name": "Démonstration ventes PME",
-            "original_filename": "ventes_pme.csv",
-            "extension": ".csv",
+            "name": DEMO_NAME if source == DEMO_DATASET else "Démonstration ventes PME",
+            "original_filename": source.name,
+            "extension": source.suffix.lower(),
+            "is_demo": True,
+            "currency": "MAD" if source == DEMO_DATASET else "",
             "created_at": datapilot.utc_now(),
             "updated_at": datapilot.utc_now(),
             "cleaned": False,
@@ -1247,6 +1592,7 @@ def demo():
             "privacy": "Fichier brut traité localement",
         }
         write_metadata(project_id, metadata)
+        refresh_pipeline(project_id, "demo")
     except Exception:
         shutil.rmtree(directory, ignore_errors=True)
         flash("La démonstration n’a pas pu être préparée.", "warn")
@@ -1321,6 +1667,7 @@ def process_project_import(project_id: str, safe_name: str, extension: str) -> d
     })
     metadata.pop("processing_error", None)
     write_metadata(project_id, metadata)
+    refresh_pipeline(project_id, "import")
     return {"ok": True, "project_id": project_id, "rows": int(len(frame))}
 
 
@@ -1387,6 +1734,135 @@ def upload():
     return redirect(url_for("project", project_id=project_id))
 
 
+@app.route("/documents", methods=["POST"])
+def upload_documents():
+    """Prépare un lot mixte ; aucun chiffre n'est validé à cette étape."""
+    uploads = [item for field in ("documents", "camera") for item in request.files.getlist(field) if item and item.filename]
+    purpose = request.form.get("purpose", "sales")
+    currency = request.form.get("currency", "MAD")
+    if purpose not in {"sales", "expenses"}:
+        abort(400)
+    if currency not in {"MAD", "EUR", "XOF", "USD", ""}:
+        abort(400)
+    if not uploads or len(uploads) > 8:
+        flash("Choisissez entre 1 et 8 documents.", "warn")
+        return redirect(url_for("index") + "#documents-import")
+    project_id = uuid.uuid4().hex
+    directory = project_dir(project_id)
+    documents = directory / "documents"
+    documents.mkdir(parents=True, exist_ok=False)
+    proposed: list[dict] = []
+    reviews: list[dict] = []
+    truncated = False
+    try:
+        for upload in uploads:
+            safe_name = secure_filename(upload.filename)
+            extension = Path(safe_name).suffix.lower()
+            if not safe_name or extension not in sales_capture.SUPPORTED_EXTENSIONS:
+                raise ValueError("Format non pris en charge. Utilisez CSV, Excel, JSON, TXT, PDF ou une image.")
+            saved_name = f"{uuid.uuid4().hex[:12]}{extension}"
+            target = documents / saved_name
+            upload.save(target)
+            if target.stat().st_size > 20 * 1024 * 1024:
+                raise ValueError("Un document dépasse 20 Mo.")
+            if extension in sales_capture.IMAGE_EXTENSIONS and not sales_capture.valid_image(target):
+                raise ValueError("Une photo est endommagée ou illisible.")
+            result = sales_capture.inspect_document(target)
+            rows = result["rows"][: max(0, sales_capture.MAX_ROWS - len(proposed))]
+            truncated = truncated or result.get("truncated", False) or len(rows) < len(result["rows"])
+            for row in rows:
+                row["source"] = saved_name
+            proposed.extend(rows)
+            reviews.append({"stored_name": saved_name, "display_name": safe_name, "status": result["status"], "message": result["message"], "suggested_rows": len(rows), "is_image": extension in sales_capture.IMAGE_EXTENSIONS})
+        metadata = {
+            "name": "Mes ventes" if purpose == "sales" else "Mes dépenses",
+            "original_filename": ", ".join(item["display_name"] for item in reviews[:3]),
+            "extension": "documents",
+            "source_kind": f"captured_{purpose}",
+            "currency": currency,
+            "created_at": datapilot.utc_now(),
+            "updated_at": datapilot.utc_now(),
+            "cleaned": False,
+            "documents": reviews,
+            "proposed_rows": proposed,
+            "truncated": truncated,
+            "transformations": [],
+        }
+        write_metadata(project_id, metadata)
+    except (ValueError, OSError, datapilot.DataPilotError):
+        shutil.rmtree(directory, ignore_errors=True)
+        flash("Un document n’a pas pu être préparé. Vérifiez son format et sa taille (20 Mo maximum par fichier).", "warn")
+        return redirect(url_for("index") + "#documents-import")
+    return redirect(url_for("review_documents", project_id=project_id))
+
+
+@app.route("/project/<project_id>/documents/review")
+def review_documents(project_id: str):
+    metadata = read_metadata(project_id)
+    if metadata.get("source_kind") not in {"captured_sales", "captured_expenses"}:
+        abort(404)
+    if (project_dir(project_id) / "raw.csv").exists():
+        return redirect(url_for("project", project_id=project_id))
+    rows = list(metadata.get("proposed_rows", []))
+    rows.extend({"date": "", "product": "", "quantity": "1", "amount": "", "source": ""} for _ in range(max(1, 3 - len(rows))))
+    return render_template("document_review.html", project_id=project_id, metadata=metadata, rows=rows)
+
+
+@app.route("/project/<project_id>/documents/<stored_name>")
+def view_document(project_id: str, stored_name: str):
+    metadata = read_metadata(project_id)
+    if stored_name not in {item.get("stored_name") for item in metadata.get("documents", [])}:
+        abort(404)
+    return send_file(project_dir(project_id) / "documents" / stored_name, as_attachment=False)
+
+
+@app.route("/project/<project_id>/documents/confirm", methods=["POST"])
+def confirm_documents(project_id: str):
+    metadata = read_metadata(project_id)
+    if metadata.get("source_kind") not in {"captured_sales", "captured_expenses"}:
+        abort(404)
+    if (project_dir(project_id) / "raw.csv").exists():
+        abort(400)
+    products = request.form.getlist("product[]")
+    amounts = request.form.getlist("amount[]")
+    quantities = request.form.getlist("quantity[]")
+    dates = request.form.getlist("date[]")
+    sources = request.form.getlist("source[]")
+    count = len(products)
+    if not (count <= sales_capture.MAX_ROWS and len(amounts) == len(quantities) == len(dates) == len(sources) == count):
+        abort(400)
+    posted_rows = [
+        {"date": dates[i], "product": products[i], "quantity": quantities[i], "amount": amounts[i], "source": sources[i]}
+        for i in range(count)
+    ]
+    accepted = []
+    for index in range(count):
+        if not products[index].strip() and not amounts[index].strip():
+            continue
+        try:
+            row = sales_capture.validate_sale(dates[index], products[index], quantities[index], amounts[index])
+        except ValueError as exc:
+            flash(f"Ligne {index + 1} : {exc}", "warn")
+            return render_template("document_review.html", project_id=project_id, metadata=metadata, rows=posted_rows), 400
+        row["fichier_source"] = sources[index] if sources[index] in {item["stored_name"] for item in metadata["documents"]} else "Saisie manuelle"
+        accepted.append(row)
+    if not accepted:
+        flash("Ajoutez au moins une ligne avec un article et un montant.", "warn")
+        return render_template("document_review.html", project_id=project_id, metadata=metadata, rows=posted_rows), 400
+    frame = pd.DataFrame(accepted)
+    frame.to_csv(project_dir(project_id) / "raw.csv", index=False, encoding="utf-8")
+    metadata.update({
+        "proposed_rows": [],
+        "confirmed_at": datapilot.utc_now(),
+        "updated_at": datapilot.utc_now(),
+        "quality_before": datapilot.profile_dataframe(frame)["quality_score"],
+    })
+    write_metadata(project_id, metadata)
+    refresh_pipeline(project_id, "documents")
+    flash(f"{counted_fr(len(accepted), 'ligne vérifiée', 'lignes vérifiées')} : votre analyse est prête.", "ok")
+    return redirect(url_for("project", project_id=project_id))
+
+
 @app.route("/invoice", methods=["POST"])
 def upload_invoices():
     uploads = [item for item in request.files.getlist("invoices") if item and item.filename]
@@ -1448,6 +1924,7 @@ def upload_invoices():
             "invoice_reviews": reviews,
         }
         write_metadata(project_id, metadata)
+        refresh_pipeline(project_id, "invoices")
     except Exception:
         shutil.rmtree(directory, ignore_errors=True)
         flash("Ces factures n’ont pas pu être préparées. Essayez un autre document.", "warn")
@@ -1488,6 +1965,7 @@ def confirm_invoices(project_id: str):
         "quality_after": datapilot.profile_dataframe(frame)["quality_score"],
     })
     write_metadata(project_id, metadata)
+    refresh_pipeline(project_id, "invoices")
     flash("Les factures sont confirmées et prêtes pour les graphiques ou l’export.", "ok")
     return redirect(url_for("project", project_id=project_id) + "#overview")
 
@@ -1595,6 +2073,7 @@ def reset(project_id: str):
     })
     metadata.pop("quality_after", None)
     write_metadata(project_id, metadata)
+    refresh_pipeline(project_id, "reset")
     flash("Retour au fichier d’origine.", "info")
     return redirect(url_for("project", project_id=project_id, section="cleaning"))
 
@@ -1630,6 +2109,7 @@ def undo_cleaning(project_id: str):
     else:
         metadata.pop("quality_after", None)
     write_metadata(project_id, metadata)
+    refresh_pipeline(project_id, "undo")
     flash("La dernière étape de correction a été annulée.", "info")
     return redirect(url_for("project", project_id=project_id, section="cleaning"))
 
@@ -2262,6 +2742,8 @@ def ask(project_id: str):
     frame = load_frame(project_id)
     dictionary_entries = read_project_items(project_id, "dictionary.json")
     understood_question = apply_business_words(question, dictionary_entries)
+    if i18n.current_language() == "en" and mode != "groq":
+        understood_question = i18n.translate_question_to_fr(understood_question)
     if mode == "groq":
         answer = groq_analysis.answer_with_groq(frame, understood_question)
     else:
@@ -2273,7 +2755,7 @@ def ask(project_id: str):
     )
     chart_proposal = advanced_features.suggest_chart_from_question(
         frame,
-        question,
+        understood_question if i18n.current_language() == "en" else question,
         aliases=dictionary_aliases(dictionary_entries),
     )
     if chart_proposal.get("ok") and chart_proposal.get("chart"):
@@ -2301,9 +2783,93 @@ def ask(project_id: str):
         payload["pin_url"] = url_for("create_chart", project_id=project_id)
         payload["cautions"] = (payload.get("cautions", []) + chart_proposal.get("warnings", []))[:5]
     payload = localize_answer_payload(payload, dictionary_entries)
+    payload = i18n.translate(payload)
+    if payload.get("chart"):
+        payload["chart"] = translated_view_items([payload["chart"]])[0]
     if wants_json_response():
         return json_response(payload)
     return render_project(project_id, answer=payload, active_section=return_section)
+
+
+@app.route("/project/<project_id>/pipeline/run", methods=["POST"])
+def rerun_pipeline(project_id: str):
+    read_metadata(project_id)
+    if refresh_pipeline(project_id, "manual") is None:
+        flash("Le pipeline n’a pas pu être exécuté.", "warn")
+    else:
+        flash("Pipeline relancé : couches et contrôles à jour.", "ok")
+    return redirect(url_for("project", project_id=project_id, section="pipeline"))
+
+
+@app.route("/project/<project_id>/sql", methods=["POST"])
+def run_project_sql(project_id: str):
+    read_metadata(project_id)
+    query = request.form.get("query", "")[:4000]
+    directory = project_dir(project_id)
+    if pipeline.latest_run(directory) is None:
+        refresh_pipeline(project_id, "backfill")
+    try:
+        result = pipeline.run_sql(directory, query)
+    except pipeline.SQLError as exc:
+        return render_project(project_id, active_section="sql", sql_query=query, sql_error=str(exc)), 422
+    return render_project(project_id, active_section="sql", sql_query=query, sql_result=result)
+
+
+def api_response(payload: dict, status: int = 200):
+    response = json_response(payload, status)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    return response
+
+
+@app.route("/api/v1/projects/<project_id>/runs")
+def api_project_runs(project_id: str):
+    read_metadata(project_id)
+    runs = pipeline.list_runs(project_dir(project_id), limit=20)
+    for run in runs:
+        run.pop("checks", None)
+    return api_response({"project_id": project_id, "runs": runs})
+
+
+@app.route("/api/v1/projects/<project_id>/quality")
+def api_project_quality(project_id: str):
+    read_metadata(project_id)
+    run = pipeline.latest_run(project_dir(project_id))
+    if run is None:
+        abort(404)
+    return api_response({
+        "project_id": project_id,
+        "run_id": run["run_id"],
+        "summary": run["quality"],
+        "checks": run["checks"],
+        "contract": pipeline.read_contract(project_dir(project_id)),
+    })
+
+
+@app.route("/api/v1/projects/<project_id>/tables/<table>")
+def api_project_table(project_id: str, table: str):
+    read_metadata(project_id)
+    if not pipeline.TABLE_NAME_RE.fullmatch(table):
+        abort(404)
+    try:
+        limit = max(1, min(int(request.args.get("limit", 500)), 5000))
+        offset = max(0, int(request.args.get("offset", 0)))
+    except ValueError:
+        abort(400)
+    try:
+        frame = pipeline.read_table(project_dir(project_id), table)
+    except KeyError:
+        abort(404)
+    page = frame.iloc[offset:offset + limit]
+    records = json.loads(page.to_json(orient="records", date_format="iso", force_ascii=False))
+    return api_response({
+        "project_id": project_id,
+        "table": table,
+        "total_rows": int(len(frame)),
+        "offset": offset,
+        "limit": limit,
+        "columns": [str(column) for column in frame.columns],
+        "rows": records,
+    })
 
 
 @app.route("/project/<project_id>/export/<fmt>")
@@ -2400,4 +2966,7 @@ def internal_error(error):
 if __name__ == "__main__":
     STORAGE_ROOT.mkdir(parents=True, exist_ok=True)
     port = int(os.environ.get("DATAPILOT_PORT", "5071"))
-    app.run(host="127.0.0.1", port=port, debug=os.environ.get("DATAPILOT_DEBUG") == "1")
+    host = os.environ.get("DATAPILOT_HOST", "127.0.0.1")
+    if host != "127.0.0.1" and len(os.environ.get("DATAPILOT_ACCESS_CODE", "")) < 12:
+        raise RuntimeError("Définissez DATAPILOT_ACCESS_CODE (12 caractères minimum) avant d'activer l'accès réseau.")
+    app.run(host=host, port=port, debug=os.environ.get("DATAPILOT_DEBUG") == "1")

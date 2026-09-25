@@ -1,0 +1,214 @@
+{
+  "ventes_mensuelles_sales.csv": {
+    "rows": 306,
+    "anomalies": {
+      "duplicates": 6,
+      "label_typos": 11,
+      "negative_quantity": 3,
+      "text_in_amount": 2,
+      "missing_city": 4,
+      "out_of_scale_rating": 2,
+      "padded_text": 5
+    },
+    "ids": {
+      "duplicates": [
+        "V-0110",
+        "V-0279",
+        "V-0208",
+        "V-0297",
+        "V-0202",
+        "V-0172"
+      ],
+      "label_typos": [
+        "V-0092",
+        "V-0197",
+        "V-0187",
+        "V-0224",
+        "V-0100",
+        "V-0241",
+        "V-0270",
+        "V-0072",
+        "V-0240",
+        "V-0203",
+        "V-0262"
+      ],
+      "negative_quantity": [
+        "V-0069",
+        "V-0049",
+        "V-0207"
+      ],
+      "text_in_amount": [
+        "V-0056",
+        "V-0090"
+      ],
+      "missing_city": [
+        "V-0049",
+        "V-0098",
+        "V-0271",
+        "V-0177"
+      ],
+      "out_of_scale_rating": [
+        "V-0206",
+        "V-0032"
+      ],
+      "iso_dates": [],
+      "padded_text": [
+        "V-0234",
+        "V-0022",
+        "V-0011",
+        "V-0086",
+        "V-0066"
+      ]
+    }
+  },
+  "orders_en.json": {
+    "rows": 121,
+    "anomalies": {
+      "duplicates": 1,
+      "missing_amount": 1,
+      "label_variant": 1
+    }
+  },
+  "carnet_epicerie_propre.png": {
+    "rows": 5,
+    "difficulty": {
+      "font": "Inkfree.ttf",
+      "rotation_deg": 0.0,
+      "blur": 0.0,
+      "jpeg_quality": null
+    },
+    "lines": [
+      {
+        "product": "Pain",
+        "amount": 12.5
+      },
+      {
+        "product": "Lait",
+        "amount": 18.0
+      },
+      {
+        "product": "Sucre",
+        "amount": 32.0
+      },
+      {
+        "product": "Thé",
+        "amount": 14.5
+      },
+      {
+        "product": "Biscuits",
+        "amount": 27.0
+      }
+    ],
+    "total": 104.0
+  },
+  "carnet_snack_incline.jpg": {
+    "rows": 6,
+    "difficulty": {
+      "font": "segoepr.ttf",
+      "rotation_deg": 2.8,
+      "blur": 0.6,
+      "jpeg_quality": 62
+    },
+    "lines": [
+      {
+        "product": "Sandwich",
+        "amount": 25.0
+      },
+      {
+        "product": "Jus orange",
+        "amount": 15.0
+      },
+      {
+        "product": "Msemen",
+        "amount": 6.0
+      },
+      {
+        "product": "Café",
+        "amount": 10.0
+      },
+      {
+        "product": "Eau",
+        "amount": 5.0
+      },
+      {
+        "product": "Harira",
+        "amount": 12.0
+      }
+    ],
+    "total": 73.0
+  },
+  "carnet_boutique_difficile.jpg": {
+    "rows": 4,
+    "difficulty": {
+      "font": "LHANDW.TTF",
+      "rotation_deg": -4.5,
+      "blur": 1.1,
+      "jpeg_quality": 45
+    },
+    "lines": [
+      {
+        "product": "Savon noir",
+        "amount": 25.0
+      },
+      {
+        "product": "Henné",
+        "amount": 40.0
+      },
+      {
+        "product": "Argan",
+        "amount": 120.0
+      },
+      {
+        "product": "Encens",
+        "amount": 18.5
+      }
+    ],
+    "total": 203.5
+  },
+  "carnet_snack_scan.pdf": {
+    "rows": 6,
+    "difficulty": {
+      "font": "segoepr.ttf",
+      "rotation_deg": 2.8,
+      "blur": 0.6,
+      "jpeg_quality": 62
+    },
+    "lines": [
+      {
+        "product": "Sandwich",
+        "amount": 25.0
+      },
+      {
+        "product": "Jus orange",
+        "amount": 15.0
+      },
+      {
+        "product": "Msemen",
+        "amount": 6.0
+      },
+      {
+        "product": "Café",
+        "amount": 10.0
+      },
+      {
+        "product": "Eau",
+        "amount": 5.0
+      },
+      {
+        "product": "Harira",
+        "amount": 12.0
+      }
+    ],
+    "total": 73.0,
+    "note": "PDF image seule du carnet incliné"
+  },
+  "facture_atlas.png": {
+    "supplier": "ATLAS DISTRIBUTION SARL",
+    "invoice_number": "F-2026-0412",
+    "date": "2026-09-12",
+    "total_ht": 1250.0,
+    "vat": 250.0,
+    "total_ttc": 1500.0,
+    "currency": "MAD"
+  }
+}

@@ -1,4 +1,5 @@
 (() => {
+  const t = (text) => (window.DP_I18N && window.DP_I18N[text]) || text;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const header = document.querySelector('[data-header]');
 
@@ -41,7 +42,7 @@
   const fileName = document.getElementById('fileName');
   const syncSelectedFile = () => {
     const selected = fileInput?.files?.[0];
-    if (fileName) fileName.textContent = selected?.name || 'Aucun fichier sélectionné';
+    if (fileName) fileName.textContent = selected?.name || t('Aucun fichier sélectionné');
     dropzone?.classList.toggle('has-file', Boolean(selected));
   };
   fileInput?.addEventListener('change', syncSelectedFile);
@@ -82,7 +83,7 @@
       button.dataset.disabledBeforeLoading = String(button.disabled);
       button.dataset.originalHtml ||= button.innerHTML;
       button.disabled = true;
-      button.innerHTML = `<span class="button-spinner" aria-hidden="true"></span>${form.dataset.loadingText || 'Traitement en cours…'}`;
+      button.innerHTML = `<span class="button-spinner" aria-hidden="true"></span>${form.dataset.loadingText || t('Traitement en cours…')}`;
     }
     state?.removeAttribute('hidden');
   };
@@ -94,7 +95,7 @@
       if (link.dataset.exportPending === 'true') return;
       link.dataset.exportPending = 'true';
       link.dataset.exportOriginalText ||= link.textContent;
-      link.textContent = link.dataset.exportLabel || 'Préparation du téléchargement…';
+      link.textContent = link.dataset.exportLabel || t('Préparation du téléchargement…');
       link.classList.add('is-preparing-download');
       link.setAttribute('aria-busy', 'true');
       const resetAfter = Number.parseInt(link.dataset.exportTimeout || '90000', 10);
@@ -149,7 +150,7 @@
           if (suggest && selected) displayName.value = suggestedName;
           displayName.placeholder = selected
             ? suggestedName
-            : 'Proposé automatiquement';
+            : t('Proposé automatiquement');
         }
         if (submitButton) submitButton.disabled = !selected || !displayName?.value.trim();
         translationBuilder.classList.toggle('has-column', selected);
@@ -203,7 +204,7 @@
         if (!response.ok) throw new Error('status unavailable');
         const payload = await response.json();
         pollingFailures = 0;
-        if (message) message.textContent = payload.message || 'Analyse en cours…';
+        if (message) message.textContent = payload.message || t('Analyse en cours…');
         if (progress) {
           progress.value = Math.max(0, Math.min(100, Number(payload.progress) || 0));
           progress.textContent = `${progress.value} %`;
@@ -221,7 +222,7 @@
       } catch (_error) {
         pollingFailures += 1;
         if (message && pollingFailures >= 3) {
-          message.textContent = 'Le suivi est momentanément indisponible. Vous pouvez lancer l’analyse locale ci-dessous.';
+          message.textContent = t('Le suivi est momentanément indisponible. Vous pouvez lancer l’analyse locale ci-dessous.');
         }
       }
       window.setTimeout(pollProcessingStatus, 1200);
@@ -357,7 +358,7 @@
     });
     const contentType = response.headers.get('content-type') || '';
     if (!contentType.includes('text/html')) {
-      throw new Error('DataPilot a reçu une réponse inattendue. Réessayez dans un instant.');
+      throw new Error(t('DataPilot a reçu une réponse inattendue. Réessayez dans un instant.'));
     }
     const html = await response.text();
     return {
@@ -370,13 +371,13 @@
     const contentType = response.headers.get('content-type') || '';
     if (!contentType.includes('application/json')) {
       throw new Error(response.status === 413
-        ? 'Le fichier dépasse la taille acceptée.'
-        : 'La réponse reçue est incomplète. Rechargez la page puis réessayez.');
+        ? t('Le fichier dépasse la taille acceptée.')
+        : t('La réponse reçue est incomplète. Rechargez la page puis réessayez.'));
     }
     try {
       return await response.json();
     } catch (_error) {
-      throw new Error('La réponse reçue est illisible. Rechargez la page puis réessayez.');
+      throw new Error(t('La réponse reçue est illisible. Rechargez la page puis réessayez.'));
     }
   };
 
@@ -384,9 +385,9 @@
     const visibleSelectors = selectors.filter((selector) => document.querySelector(selector));
     if (!url || !visibleSelectors.length) return;
     const result = await fetchProjectDocument(url);
-    if (!result.response.ok) throw new Error('L’affichage n’a pas pu être actualisé.');
+    if (!result.response.ok) throw new Error(t('L’affichage n’a pas pu être actualisé.'));
     const changed = applyDocumentTargets(result.document, visibleSelectors);
-    if (!changed) throw new Error('Les nouvelles informations n’ont pas pu être affichées.');
+    if (!changed) throw new Error(t('Les nouvelles informations n’ont pas pu être affichées.'));
   };
 
   const submitAsyncProjectForm = async (form) => {
@@ -411,7 +412,7 @@
         const payload = await readJsonResponse(response);
         const fragmentChanged = applyHtmlFragment(payload.fragment);
         if (!fragmentChanged && !response.ok) {
-          throw new Error(payload.error?.message || payload.message || 'La modification n’a pas pu être appliquée.');
+          throw new Error(payload.error?.message || payload.message || t('La modification n’a pas pu être appliquée.'));
         }
         if (payload.refresh_url && Array.isArray(payload.refresh_targets) && payload.refresh_targets.length) {
           await refreshProjectTargets(payload.refresh_url, payload.refresh_targets);
@@ -433,14 +434,14 @@
       syncFlashStack(result.document);
       if (!changed) {
         throw new Error(result.response.ok
-          ? 'La modification a été enregistrée, mais l’affichage n’a pas pu être actualisé.'
-          : 'La modification n’a pas pu être appliquée.');
+          ? t('La modification a été enregistrée, mais l’affichage n’a pas pu être actualisé.')
+          : t('La modification n’a pas pu être appliquée.'));
       }
       const canonical = result.document.querySelector('[data-project-nav]')?.dataset.projectUrl;
       setCanonicalProjectLocation(canonical, focusSelector);
       focusProjectTarget(focusSelector);
     } catch (error) {
-      showPageMessage(error?.message || 'La connexion a été interrompue. Vos données sont restées intactes.', 'warn');
+      showPageMessage(error?.message || t('La connexion a été interrompue. Vos données sont restées intactes.'), 'warn');
     } finally {
       if (document.contains(form)) setLoadingForm(form, false);
     }
@@ -492,27 +493,27 @@
 
     const section = document.createElement('section');
     section.className = 'answer-chart';
-    section.append(createTextElement('h3', '', 'Graphique suggéré'));
+    section.append(createTextElement('h3', '', t('Graphique suggéré')));
     if (payload.chart_message) section.append(createTextElement('p', 'answer-chart-intro', payload.chart_message));
     const canvasWrap = document.createElement('div');
     canvasWrap.className = 'answer-chart-canvas';
     const canvas = document.createElement('canvas');
     canvas.height = 210;
     canvas.setAttribute('role', 'img');
-    canvas.setAttribute('aria-label', `Graphique suggéré : ${chart.title || 'résultat de la question'}`);
+    canvas.setAttribute('aria-label', `${t('Graphique suggéré')} : ${chart.title || ''}`);
     canvasWrap.append(canvas);
     section.append(canvasWrap);
 
     const values = document.createElement('details');
     values.className = 'answer-chart-values';
-    values.append(createTextElement('summary', '', 'Voir les valeurs du graphique'));
+    values.append(createTextElement('summary', '', t('Voir les valeurs du graphique')));
     const tableWrap = document.createElement('div');
     tableWrap.className = 'mini-table-wrap';
     const table = document.createElement('table');
     const head = document.createElement('thead');
     const headRow = document.createElement('tr');
-    const labelHead = createTextElement('th', '', 'Élément');
-    const valueHead = createTextElement('th', '', 'Valeur');
+    const labelHead = createTextElement('th', '', t('Élément'));
+    const valueHead = createTextElement('th', '', t('Valeur'));
     labelHead.setAttribute('scope', 'col');
     valueHead.setAttribute('scope', 'col');
     headRow.append(labelHead, valueHead);
@@ -529,7 +530,7 @@
     section.append(values);
 
     if (payload.pin_url) {
-      const pin = createTextElement('button', 'btn secondary answer-pin-chart', 'Ajouter à mes graphiques');
+      const pin = createTextElement('button', 'btn secondary answer-pin-chart', t('Ajouter à mes graphiques'));
       pin.type = 'button';
       pin.dataset.pinChart = 'true';
       pin.dataset.pinUrl = payload.pin_url;
@@ -547,7 +548,7 @@
 
     window.setTimeout(() => {
       if (typeof window.renderDataPilotChart === 'function') window.renderDataPilotChart(canvas, chart);
-      else canvasWrap.append(createTextElement('p', 'chart-render-error', 'Le graphique ne peut pas être affiché pour le moment.'));
+      else canvasWrap.append(createTextElement('p', 'chart-render-error', t('Le graphique ne peut pas être affiché pour le moment.')));
     }, 0);
   };
 
@@ -555,27 +556,27 @@
     const answer = document.createElement('article');
     answer.className = `answer${payload.ok ? '' : ' uncertain'}`;
     const label = payload.ok
-      ? (payload.source === 'groq' ? 'Votre explication approfondie' : 'Votre réponse')
-      : 'Réponse indisponible';
+      ? (payload.source === 'groq' ? t('Votre explication approfondie') : t('Votre réponse'))
+      : t('Réponse indisponible');
     answer.append(createTextElement('small', 'answer-label', label));
-    const summary = createTextElement('p', 'answer-summary', payload.answer || 'La réponse est indisponible.');
+    const summary = createTextElement('p', 'answer-summary', payload.answer || t('La réponse est indisponible.'));
     summary.setAttribute('dir', 'auto');
     answer.append(summary);
-    appendAnswerList(answer, 'À retenir', payload.insights);
-    appendAnswerList(answer, 'À vérifier', payload.cautions, 'cautions');
+    appendAnswerList(answer, t('À retenir'), payload.insights);
+    appendAnswerList(answer, t('À vérifier'), payload.cautions, 'cautions');
     appendSuggestedChart(answer, payload);
 
     if (Array.isArray(payload.evidence) && payload.evidence.length) {
       const evidence = document.createElement('div');
       evidence.className = 'evidence-list';
-      payload.evidence.forEach((item) => evidence.append(createTextElement('div', 'answer-evidence', `Méthode · ${item}`)));
+      payload.evidence.forEach((item) => evidence.append(createTextElement('div', 'answer-evidence', `${t('Méthode')} · ${item}`)));
       answer.append(evidence);
     }
 
     if (Array.isArray(payload.suggested_questions) && payload.suggested_questions.length) {
       const followups = document.createElement('div');
       followups.className = 'followups';
-      followups.append(createTextElement('strong', '', 'Vous pouvez aussi demander :'));
+      followups.append(createTextElement('strong', '', t('Vous pouvez aussi demander :')));
       payload.suggested_questions.forEach((item) => {
         const button = createTextElement('button', 'followup-question', String(item));
         button.type = 'button';
@@ -595,10 +596,10 @@
     turn.append(displayedQuestion);
     const pending = document.createElement('article');
     pending.className = 'answer pending';
-    pending.append(createTextElement('small', 'answer-label', 'Analyse en cours'));
+    pending.append(createTextElement('small', 'answer-label', t('Analyse en cours')));
     const thinking = document.createElement('div');
     thinking.className = 'chat-thinking';
-    thinking.setAttribute('aria-label', 'DataPilot prépare votre réponse');
+    thinking.setAttribute('aria-label', t('DataPilot prépare votre réponse'));
     for (let index = 0; index < 3; index += 1) thinking.append(document.createElement('i'));
     pending.append(thinking);
     turn.append(pending);
@@ -737,8 +738,8 @@
       pending.replaceWith(buildAnswer({
         ok: false,
         answer: timedOut
-          ? 'La réponse prend trop de temps. Réessayez dans un instant.'
-          : 'La connexion avec DataPilot a été interrompue. Votre page et votre fichier sont restés intacts.',
+          ? t('La réponse prend trop de temps. Réessayez dans un instant.')
+          : t('La connexion avec DataPilot a été interrompue. Votre page et votre fichier sont restés intacts.'),
         evidence: [],
         suggested_questions: [],
       }));
@@ -753,6 +754,21 @@
   });
 
   document.addEventListener('click', async (event) => {
+    const briefButton = event.target.closest('[data-brief-speak]');
+    if (briefButton) {
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+        const section = briefButton.closest('.business-brief');
+        const words = [section?.querySelector('.business-brief-total')?.innerText,
+          section?.querySelector('.business-brief-finding')?.innerText,
+          section?.querySelector('.business-brief li')?.innerText].filter(Boolean).join('. ');
+        const message = new SpeechSynthesisUtterance(words);
+        message.lang = window.DP_LANG === 'en' ? 'en-US' : 'fr-FR';
+        message.rate = 0.9;
+        speechSynthesis.speak(message);
+      }
+      return;
+    }
     const pinButton = event.target.closest('[data-pin-chart]');
     if (pinButton) {
       const status = pinButton.parentElement?.querySelector('.answer-pin-status');
@@ -765,7 +781,7 @@
       data.append('chart_type', pinButton.dataset.chartType || 'auto');
       pinButton.disabled = true;
       const originalText = pinButton.textContent;
-      pinButton.textContent = 'Ajout en cours…';
+      pinButton.textContent = t('Ajout en cours…');
       try {
         const response = await fetch(pinButton.dataset.pinUrl, {
           method: 'POST', body: data, credentials: 'same-origin',
@@ -773,12 +789,12 @@
         });
         const payload = await readJsonResponse(response);
         if (!response.ok || !payload.ok) throw new Error(payload.message || 'Ajout impossible');
-        pinButton.textContent = 'Ajouté à mes graphiques';
+        pinButton.textContent = t('Ajouté à mes graphiques');
         if (status) status.textContent = payload.message;
       } catch (error) {
         pinButton.disabled = false;
         pinButton.textContent = originalText;
-        if (status) status.textContent = error?.message || 'Le graphique n’a pas pu être ajouté.';
+        if (status) status.textContent = error?.message || t('Le graphique n’a pas pu être ajouté.');
       }
       return;
     }

@@ -1,269 +1,337 @@
 {% extends "base.html" %}
-{% block title %}{{ project_sections[active_section].label }} · {{ metadata.name }} · DataPilot{% endblock %}
+{% from "_icons.html" import icon %}
+{% block title %}{{ _(project_sections[active_section].label) }} · {{ metadata.name|replace('_', ' ') }} · DataPilot{% endblock %}
+{% block body_class %}page-project{% endblock %}
 
 {% block content %}
 {% set current_section = project_sections[active_section] %}
-<nav class="project-backbar" aria-label="Retour aux analyses">
-  <a href="{{ url_for('index') }}#analyses"><span aria-hidden="true">←</span> Mes analyses</a>
-  <span>Étape {{ current_section.number }} sur {{ project_sections|length }}</span>
-</nav>
-
-<section class="dataset-head" data-reveal="hero">
-  <div class="dataset-copy">
-    <div class="dataset-title-row">
-      <span class="file-context"><i>{{ metadata.extension|replace('.', '')|upper }}</i></span>
-      <div>
-        <span class="dataset-ready"><i aria-hidden="true">✓</i> Analyse prête</span>
-        <h1>{{ metadata.name|replace('_', ' ') }}</h1>
+{% set run = pipeline_run %}
+<div class="container">
+<section class="project-head dataset-head" aria-labelledby="project-title">
+  <nav class="crumbs" aria-label="{{ _('Mes analyses') }}">
+    <a href="{{ url_for('index') }}#analyses">{{ _('Mes analyses') }}</a><span aria-hidden="true">›</span><span>{{ metadata.name|replace('_', ' ')|tr }}</span>
+  </nav>
+  <div class="project-title-row">
+    <div>
+      <span class="pill pass">{{ _('Analyse prête') }}</span>
+      <h1 id="project-title" style="margin-top:10px">{{ metadata.name|replace('_', ' ')|tr }}</h1>
+      <div class="meta-row">
+        <span class="chip"><b>{{ (metadata.extension|replace('.', '')|upper) }}</b> {{ metadata.original_filename|truncate(42, True, '…') }}</span>
+        <span class="chip"><b>{{ profile.rows|thousands }}</b> {{ _('lignes') }}</span>
+        <span class="chip"><b>{{ profile.columns_count }}</b> {{ _('colonnes') }}</span>
+        {% if run %}<span class="chip">{{ _('Dernière exécution') }} <b>{{ run.started_at|when }}</b></span>{% endif %}
       </div>
     </div>
-    <details class="project-file-details">
-      <summary>Détails du fichier</summary>
-      <p>{{ metadata.original_filename }} · {% if metadata.cleaned %}version nettoyée{% else %}fichier d’origine{% endif %}</p>
-    </details>
-  </div>
-  <div class="head-actions">
-    <a class="btn primary project-download" href="{{ url_for('export', project_id=project_id, fmt='xlsx') }}" download data-export-download data-export-label="Préparation du fichier Excel…">
-      <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 18v2h14v-2"/></svg>
-      Télécharger Excel
-    </a>
-    <details class="export-menu">
-      <summary>Autres formats</summary>
-      <div>
-        <a href="{{ url_for('export', project_id=project_id, fmt='csv') }}" download>Fichier CSV</a>
-        <a href="{{ url_for('export', project_id=project_id, fmt='json') }}" download>Fichier JSON</a>
-      </div>
-    </details>
+    <div class="head-actions">
+      <details class="export-menu">
+        <summary>{{ _('Autres formats') }}</summary>
+        <div>
+          <a href="{{ url_for('export', project_id=project_id, fmt='csv') }}" download>{{ _('Fichier CSV') }}</a>
+          <a href="{{ url_for('export', project_id=project_id, fmt='json') }}" download>{{ _('Fichier JSON') }}</a>
+          <a href="{{ url_for('api_project_table', project_id=project_id, table='silver') }}" target="_blank" rel="noopener">API · silver</a>
+        </div>
+      </details>
+      <a class="btn primary" href="{{ url_for('export', project_id=project_id, fmt='xlsx') }}" download data-export-download data-export-label="{{ _('Préparation du fichier Excel…') }}">{{ icon('download') }} {{ _('Télécharger Excel') }}</a>
+    </div>
   </div>
 </section>
 
-<div class="project-workspace">
-<nav
-  class="project-nav"
-  aria-label="Pages de l’analyse"
-  data-project-nav
-  data-project-url="{{ url_for('project', project_id=project_id, section=active_section) }}"
->
-  <div class="project-nav-head">
-    <span>Votre parcours</span>
-    <strong>{{ current_section.number }}/{{ project_sections|length }}</strong>
-    <div class="project-progress" role="progressbar" aria-label="Progression dans l’analyse" aria-valuemin="1" aria-valuemax="{{ project_sections|length }}" aria-valuenow="{{ current_section.number }}">
-      <i style="--progress: {{ (current_section.number|int) * 25 }}%"></i>
-    </div>
-  </div>
-  {% for section_key, section in project_sections.items() %}
-  <a
-    href="{{ url_for('project', project_id=project_id, section=section_key) }}"
-    class="{% if active_section == section_key %}is-active{% endif %}"
-    {% if active_section == section_key %}aria-current="page"{% endif %}
-  >
-    <span class="project-nav-number">{{ section.number }}</span>
-    <span class="project-nav-copy">
-      <strong>{{ section.label }}</strong>
-      <small>{{ section.description }}</small>
-    </span>
-    <span class="project-nav-arrow" aria-hidden="true">›</span>
-  </a>
-  {% endfor %}
-  <button type="button" class="project-nav-help" data-open-chatbot>
-    <span aria-hidden="true">?</span>
-    <strong>Besoin d’aide ?</strong>
-    <small>Posez votre question</small>
-  </button>
-</nav>
+<div class="project-shell">
+  <nav class="sidebar" aria-label="{{ _('Pages de l’analyse') }}" data-project-nav data-project-url="{{ url_for('project', project_id=project_id, section=active_section) }}">
+    {% for section_key, section in project_sections.items() %}
+    <a href="{{ url_for('project', project_id=project_id, section=section_key) }}" class="side-link {% if active_section == section_key %}is-active{% endif %}" {% if active_section == section_key %}aria-current="page"{% endif %}>
+      <span class="side-icon">{{ icon(section.icon) }}</span>
+      <span class="side-copy"><strong>{{ _(section.label) }}</strong><small>{{ _(section.description) }}</small></span>
+    </a>
+    {% endfor %}
+    <span class="side-sep" aria-hidden="true"></span>
+    <button type="button" class="side-help" data-open-chatbot>
+      <span class="side-icon">{{ icon('help') }}</span>
+      <span class="side-copy"><strong>{{ _('Assistant') }}</strong><small>{{ _('Posez une question') }}</small></span>
+    </button>
+  </nav>
 
-<section class="project-stage" aria-labelledby="project-stage-title">
-  <header class="project-guidance">
-    <span class="project-guidance-number" aria-hidden="true">{{ current_section.number }}</span>
-    <div>
-      <small>Ce que vous allez faire</small>
-      <h2 id="project-stage-title">{{ current_section.label }}</h2>
-      <p>{{ current_section.guidance }}</p>
-    </div>
-  </header>
+  <section class="stage" aria-labelledby="stage-title">
+    <header class="stage-head">
+      <div>
+        <h2 id="stage-title">{{ _(current_section.title) }}</h2>
+        <p>{{ _(current_section.guidance) }}</p>
+      </div>
+      {% if active_section == 'pipeline' %}
+      <form action="{{ url_for('rerun_pipeline', project_id=project_id) }}" method="post" data-loading-form data-loading-text="{{ _('Exécution…') }}">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <button class="btn secondary" type="submit" data-submit-button>{{ icon('play') }} {{ _('Relancer le pipeline') }}</button>
+      </form>
+      {% endif %}
+    </header>
 
 <div class="project-page-content" data-project-section="{{ active_section }}">
+{# ======================= VUE D'ENSEMBLE ======================= #}
 {% if active_section == 'overview' %}
 {% if metadata.source_kind == 'invoices' %}
-<section class="invoice-review panel" id="invoice-review" aria-labelledby="invoice-review-title" data-reveal>
-  <div class="panel-head">
-    <div><span class="eyebrow">Validation humaine</span><h2 id="invoice-review-title">Vérifiez vos factures</h2><p>Les valeurs détectées sont des propositions. Corrigez-les si nécessaire, puis confirmez-les.</p></div>
+<section class="card invoice-review" id="invoice-review" aria-labelledby="invoice-review-title">
+  <div class="card-head">
+    <div><span class="eyebrow">{{ _('Validation humaine') }}</span><h3 id="invoice-review-title">{{ _('Vérifiez vos factures') }}</h3><p>{{ _('Les valeurs détectées sont des propositions. Corrigez-les si nécessaire, puis confirmez-les.') }}</p></div>
     <span class="count">{{ invoice_rows|length }}</span>
   </div>
-  <form action="{{ url_for('confirm_invoices', project_id=project_id) }}" method="post" class="invoice-review-form" data-loading-form data-async-project data-refresh-targets=".dataset-head,#invoice-review,#overview,#automatic-dashboard,#cleaning,#business-words,#chart-studio" data-focus-target="#overview" data-loading-text="Confirmation…">
+  <form action="{{ url_for('confirm_invoices', project_id=project_id) }}" method="post" class="invoice-review-form" data-loading-form data-loading-text="{{ _('Confirmation…') }}">
     <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
     {% for row in invoice_rows %}
     {% set review = metadata.invoice_reviews[loop.index0] if metadata.invoice_reviews and metadata.invoice_reviews|length > loop.index0 else none %}
     <fieldset class="invoice-sheet">
-      <legend>Facture {{ loop.index }} · {{ row['fichier_source'] }}</legend>
-      {% if review %}<p class="document-reading-status {{ review.status }}">{{ review.message }}</p>{% endif %}
-      <div class="simple-grid three">
-        <div><label for="supplier-{{ loop.index0 }}">Fournisseur</label><input id="supplier-{{ loop.index0 }}" name="fournisseur_{{ loop.index0 }}" value="{{ row['fournisseur'] or '' }}" maxlength="160"></div>
-        <div><label for="invoice-number-{{ loop.index0 }}">Numéro de facture</label><input id="invoice-number-{{ loop.index0 }}" name="numero_facture_{{ loop.index0 }}" value="{{ row['numero_facture'] or '' }}" maxlength="160"></div>
-        <div><label for="invoice-date-{{ loop.index0 }}">Date</label><input id="invoice-date-{{ loop.index0 }}" name="date_facture_{{ loop.index0 }}" type="date" value="{{ (row['date_facture'] or '')[:10] }}"></div>
-        <div><label for="invoice-ht-{{ loop.index0 }}">Total hors taxes</label><input id="invoice-ht-{{ loop.index0 }}" name="total_ht_{{ loop.index0 }}" inputmode="decimal" value="{{ row['total_ht'] if row['total_ht'] is not none else '' }}"></div>
-        <div><label for="invoice-vat-{{ loop.index0 }}">Montant de TVA</label><input id="invoice-vat-{{ loop.index0 }}" name="tva_{{ loop.index0 }}" inputmode="decimal" value="{{ row['tva'] if row['tva'] is not none else '' }}"></div>
-        <div><label for="invoice-vat-rate-{{ loop.index0 }}">Taux de TVA (%)</label><input id="invoice-vat-rate-{{ loop.index0 }}" name="taux_tva_{{ loop.index0 }}" inputmode="decimal" value="{{ row['taux_tva'] if row['taux_tva'] is not none else '' }}"></div>
-        <div><label for="invoice-total-{{ loop.index0 }}">Total à payer</label><input id="invoice-total-{{ loop.index0 }}" name="total_ttc_{{ loop.index0 }}" inputmode="decimal" value="{{ row['total_ttc'] if row['total_ttc'] is not none else '' }}"></div>
-        <div><label for="invoice-currency-{{ loop.index0 }}">Devise</label><input id="invoice-currency-{{ loop.index0 }}" name="devise_{{ loop.index0 }}" value="{{ row['devise'] or '' }}" maxlength="20" placeholder="Ex. MAD"></div>
+      <legend>{{ _('Facture') }} {{ loop.index }} · {{ row['fichier_source'] }}</legend>
+      {% if review %}<p class="document-reading-status {{ review.status }}">{{ review.message|tr }}</p>{% endif %}
+      <div class="grid-3">
+        <div><label for="supplier-{{ loop.index0 }}">{{ _('Fournisseur') }}</label><input id="supplier-{{ loop.index0 }}" name="fournisseur_{{ loop.index0 }}" value="{{ row['fournisseur'] or '' }}" maxlength="160"></div>
+        <div><label for="invoice-number-{{ loop.index0 }}">{{ _('Numéro de facture') }}</label><input id="invoice-number-{{ loop.index0 }}" name="numero_facture_{{ loop.index0 }}" value="{{ row['numero_facture'] or '' }}" maxlength="160"></div>
+        <div><label for="invoice-date-{{ loop.index0 }}">{{ _('Date') }}</label><input id="invoice-date-{{ loop.index0 }}" name="date_facture_{{ loop.index0 }}" type="date" value="{{ (row['date_facture'] or '')[:10] }}"></div>
+        <div><label for="invoice-ht-{{ loop.index0 }}">{{ _('Total hors taxes') }}</label><input id="invoice-ht-{{ loop.index0 }}" name="total_ht_{{ loop.index0 }}" inputmode="decimal" value="{{ row['total_ht'] if row['total_ht'] is not none else '' }}"></div>
+        <div><label for="invoice-vat-{{ loop.index0 }}">{{ _('Montant de TVA') }}</label><input id="invoice-vat-{{ loop.index0 }}" name="tva_{{ loop.index0 }}" inputmode="decimal" value="{{ row['tva'] if row['tva'] is not none else '' }}"></div>
+        <div><label for="invoice-vat-rate-{{ loop.index0 }}">{{ _('Taux de TVA (%)') }}</label><input id="invoice-vat-rate-{{ loop.index0 }}" name="taux_tva_{{ loop.index0 }}" inputmode="decimal" value="{{ row['taux_tva'] if row['taux_tva'] is not none else '' }}"></div>
+        <div><label for="invoice-total-{{ loop.index0 }}">{{ _('Total à payer') }}</label><input id="invoice-total-{{ loop.index0 }}" name="total_ttc_{{ loop.index0 }}" inputmode="decimal" value="{{ row['total_ttc'] if row['total_ttc'] is not none else '' }}"></div>
+        <div><label for="invoice-currency-{{ loop.index0 }}">{{ _('Devise') }}</label><input id="invoice-currency-{{ loop.index0 }}" name="devise_{{ loop.index0 }}" value="{{ row['devise'] or '' }}" maxlength="20" placeholder="{{ _('Ex. MAD') }}"></div>
       </div>
     </fieldset>
     {% endfor %}
-    <button class="btn primary" type="submit" data-submit-button>J’ai vérifié ces informations</button>
-    <div class="loading-state inline-loading" role="status" aria-live="polite" hidden><span class="loading-bar" aria-hidden="true"><i></i></span><strong>Confirmation…</strong></div>
+    <button class="btn primary" type="submit" data-submit-button>{{ _('J’ai vérifié ces informations') }}</button>
   </form>
 </section>
 {% endif %}
 
-<section class="overview-section" id="overview" data-reveal>
-  <div class="section-head compact-head">
-    <div><span class="eyebrow">Vue d’ensemble</span><h2>L’essentiel de votre fichier</h2><p>Les points à connaître avant de prendre une décision.</p></div>
-  </div>
-  <div class="kpis" data-stagger>
-    <article class="quality-card">
-      <div class="kpi-label"><span aria-hidden="true">✓</span><small>Qualité du fichier</small></div>
-      <strong class="score">{{ profile.quality_score }}<i>/100</i></strong>
-      <div class="meter" role="progressbar" aria-label="Qualité du fichier" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ profile.quality_score }}"><span style="--score:{{ profile.quality_score }}%"></span></div>
+<section class="overview-section" id="overview" style="display:grid;gap:22px">
+  <div class="kpi-grid">
+    {% set score = profile.quality_score %}
+    <article class="kpi is-quality">
+      <span class="kpi-label">{{ _('Score qualité') }}</span>
+      <div class="quality-row">
+        <span class="ring {% if score < 70 %}is-low{% elif score < 90 %}is-mid{% endif %}" style="--value: {{ score }}" role="img" aria-label="{{ _('Score qualité') }} {{ score }}/100"><span>{{ score }}</span></span>
+        <span class="verdict"><strong>{% if score >= 90 %}{{ _('Excellent') }}{% elif score >= 70 %}{{ _('À surveiller') }}{% else %}{{ _('À corriger') }}{% endif %}</strong><small>{{ _('sur 100') }}</small></span>
+      </div>
     </article>
-    <article><div class="kpi-label"><span aria-hidden="true">≡</span><small>Lignes</small></div><strong>{{ "{:,}".format(profile.rows).replace(',', ' ') }}</strong><p>{{ profile.columns_count }} colonnes détectées</p></article>
-    <article><div class="kpi-label"><span aria-hidden="true">○</span><small>Cellules vides</small></div><strong>{{ profile.missing + profile.empty_strings }}</strong><p>cellules à contrôler</p></article>
-    <article><div class="kpi-label"><span aria-hidden="true">◇</span><small>Doublons</small></div><strong>{{ profile.duplicates }}</strong><p>lignes identiques</p></article>
+    <article class="kpi">
+      <span class="kpi-label">{{ _('Lignes') }}</span>
+      <strong class="kpi-value">{{ profile.rows|thousands }}</strong>
+      <span class="kpi-sub">{{ profile.columns_count }} {{ _('colonnes détectées') }}</span>
+    </article>
+    <article class="kpi">
+      <span class="kpi-label">{{ _('Contrôles réussis') }}</span>
+      {% if run %}
+      <strong class="kpi-value">{{ run.quality.silver.passed }}<i>/{{ run.quality.silver.total }}</i></strong>
+      {% if run.quality.silver.score > run.quality.bronze.score %}
+      <span class="kpi-sub">{{ _('Bronze') }} {{ run.quality.bronze.score }} % → <b>{{ _('Silver') }} {{ run.quality.silver.score }} %</b></span>
+      {% else %}
+      <span class="kpi-sub">{{ _('Qualité') }} {{ run.quality.bronze.score }} %, {{ _('corrections à valider') }}</span>
+      {% endif %}
+      {% else %}<strong class="kpi-value">—</strong>{% endif %}
+    </article>
+    <article class="kpi">
+      <span class="kpi-label">{{ _('Cellules vides') }} · {{ _('Doublons') }}</span>
+      <strong class="kpi-value">{{ profile.missing + profile.empty_strings }}<i> · {{ profile.duplicates }}</i></strong>
+      <span class="kpi-sub">{{ _('cellules à contrôler') }}</span>
+    </article>
   </div>
 
-  <section class="tracked-numbers" id="tracked-numbers" aria-labelledby="tracked-title">
-    <div class="subsection-head">
-      <div><span class="eyebrow">Vos objectifs</span><h3 id="tracked-title">Mes chiffres à suivre</h3><p>Choisissez un chiffre important pour votre activité. DataPilot le recalcule lorsque le fichier change.</p></div>
+  <section class="card business-brief-card" aria-labelledby="business-brief-title">
+    <div class="card-head">
+      <div><span class="eyebrow">{{ _('Aide à la décision') }}</span><h3 id="business-brief-title">{{ _('Que disent vraiment vos chiffres ?') }}</h3><p>{{ _('Calculs locaux, méthode et limites visibles.') }}</p></div>
+      {% if business_brief.available %}<button class="btn secondary small" type="button" data-brief-speak>{{ _('Écouter') }}</button>{% endif %}
     </div>
-    {% if saved_kpis %}
-    <div class="tracked-grid">
-      {% for item in saved_kpis %}
-      <article class="tracked-card {{ item.status }}">
-        <div class="tracked-card-head"><span>{{ item.status_label }}</span><form action="{{ url_for('delete_kpi', project_id=project_id, kpi_id=item.id) }}" method="post" data-confirm="Retirer ce chiffre du résumé ?" data-loading-form data-async-project data-refresh-targets="#overview" data-focus-target="#tracked-numbers" data-loading-text="Retrait…"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button type="submit" aria-label="Retirer {{ item.name }}">Retirer</button></form></div>
-        <h4>{{ item.name }}</h4>
-        <strong>{{ item.value }}</strong>
-        {% if item.target is not none %}<p>Objectif : {{ item.target }} · {{ item.favorable_direction_label }}</p>{% else %}<p>Aucun objectif défini.</p>{% endif %}
-        {% if item.progress is not none %}<div class="target-progress" role="progressbar" aria-label="Progression de {{ item.name }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ item.progress }}"><span style="--progress:{{ item.progress }}%"></span></div>{% endif %}
-      </article>
-      {% endfor %}
+    {% if business_brief.available %}
+    <div class="business-brief">
+      <div>
+        <p class="business-brief-total"><span>{{ business_brief.total_label|tr }}</span><strong>{{ business_brief.total|money }} {% if metadata.currency %}{{ metadata.currency }}{% endif %}</strong><small>{{ business_brief.used_rows|thousands }} {{ _('lignes retenues') }}</small></p>
+        <p class="business-brief-method">{{ _('Méthode') }} · {{ ('Somme de la colonne « ' ~ business_brief.amount_column ~ ' » ; ' ~ business_brief.excluded_rows ~ ' ligne(s) sans montant exploitable exclue(s).')|tr }}</p>
+        {% for finding in business_brief.findings %}<p class="business-brief-finding"><strong>{{ finding.title|tr }} :</strong> {{ finding.detail|tr }}</p>{% endfor %}
+      </div>
+      <div>
+        <h4>{{ _('Prochaine vérification utile') }}</h4>
+        <ul>{% for action in business_brief.actions %}<li>{{ action|tr }}</li>{% endfor %}</ul>
+        <details><summary>{{ _('Limites de cette analyse') }}</summary><ul>{% for limitation in business_brief.limitations %}<li>{{ limitation|tr }}</li>{% endfor %}</ul></details>
+      </div>
     </div>
     {% else %}
-    <p class="empty-guidance">Aucun chiffre personnel pour le moment. Ajoutez par exemple votre total de ventes ou votre panier moyen.</p>
+    <p class="muted">{{ business_brief.reason|tr }}</p>
     {% endif %}
-    <details class="feature-builder">
-      <summary>Ajouter un chiffre à suivre</summary>
-      <form action="{{ url_for('create_kpi', project_id=project_id) }}" method="post" class="simple-feature-form" data-loading-form data-async-project data-refresh-targets="#overview" data-focus-target="#tracked-numbers" data-loading-text="Ajout…">
-        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-        <label for="kpi-name">Comment voulez-vous l’appeler ?</label>
-        <input id="kpi-name" name="name" maxlength="80" placeholder="Ex. Objectif de ventes mensuel">
-        <div class="simple-grid three">
-          <div><label for="kpi-measure">Quel chiffre utiliser ?</label><select id="kpi-measure" name="measure"><option value="">Nombre de lignes</option>{% for option in chart_options.measures %}<option value="{{ option.name }}">{{ option.label }}</option>{% endfor %}</select></div>
-          <div><label for="kpi-aggregation">Comment le calculer ?</label><select id="kpi-aggregation" name="aggregation"><option value="count">Compter</option><option value="sum">Faire le total</option><option value="mean">Calculer la moyenne</option><option value="median">Trouver la valeur centrale</option></select></div>
-          <div><label for="kpi-target">Quel est votre objectif ?</label><input id="kpi-target" name="target" inputmode="decimal" placeholder="Ex. 10000"></div>
-        </div>
-        <fieldset class="plain-choice"><legend>Quel sens est favorable ?</legend><label><input type="radio" name="direction" value="higher" checked> Plus le chiffre est élevé, mieux c’est</label><label><input type="radio" name="direction" value="lower"> Plus le chiffre est bas, mieux c’est</label></fieldset>
-        <button class="btn primary" type="submit" data-submit-button>Ajouter à mon résumé</button>
-      </form>
-    </details>
   </section>
 </section>
 
-<section class="dashboard-section" id="automatic-dashboard" data-reveal>
-  <div class="section-head">
-    <div><span class="eyebrow">Tableau de bord automatique</span><h2>Vos données en un coup d’œil</h2><p>DataPilot choisit les vues les plus utiles selon le contenu du fichier.</p></div>
+<section class="dashboard-section" id="automatic-dashboard" style="display:grid;gap:18px">
+  <div class="section-head" style="margin-bottom:0">
+    <div><span class="eyebrow">{{ _('Tableau de bord automatique') }}</span><h3>{{ _('Vos données en un coup d’œil') }}</h3><p>{{ _('Les vues sont choisies selon le type de chaque colonne.') }}</p></div>
   </div>
   {% if dashboard.charts %}
   <div class="charts-grid">
     {% for chart in dashboard.charts %}
     <article class="chart-card">
-      <div class="chart-card-head"><span>Vue automatique</span><i aria-hidden="true">•••</i></div>
+      <div class="chart-card-head">{% if chart.source == 'gold' %}<span class="layer-tag gold">Gold</span>{% else %}<span>{{ _('Vue automatique') }}</span>{% endif %}</div>
       <h3>{{ chart.title }}</h3>
       {% if chart.subtitle %}<p class="chart-subtitle">{{ chart.subtitle }}</p>{% endif %}
-      <div class="chart-canvas-wrap"><canvas id="chart{{ loop.index0 }}" height="225" role="img" aria-label="Graphique : {{ chart.title }}"></canvas></div>
-      <p class="chart-caption">{{ chart.subtitle or 'Visualisation générée à partir des valeurs disponibles dans le fichier.' }}</p>
-      <p class="chart-render-error" hidden>Le graphique ne peut pas être affiché pour le moment.</p>
+      <div class="chart-canvas-wrap"><canvas id="chart{{ loop.index0 }}" height="225" role="img" aria-label="{{ chart.title }}"></canvas></div>
+      <p class="chart-render-error" hidden>{{ _('Le graphique ne peut pas être affiché pour le moment.') }}</p>
       <div class="chart-help-row">
-        {% if chart.explanation %}<details class="chart-explanation"><summary>Comprendre le point le plus élevé</summary><div><ul>{% for item in chart.explanation.points %}<li>{{ item }}</li>{% endfor %}</ul><p>{{ chart.explanation.caution }}</p></div></details>{% endif %}
-        <details class="chart-values"><summary>Voir les valeurs</summary><div class="mini-table-wrap"><table><thead><tr><th scope="col">Élément</th><th scope="col">Valeur</th></tr></thead><tbody>{% for value in chart['values'] %}<tr><td>{{ chart['labels'][loop.index0] }}</td><td>{{ value }}</td></tr>{% endfor %}</tbody></table></div></details>
+        {% if chart.explanation %}<details class="chart-explanation"><summary>{{ _('Comprendre le point le plus élevé') }}</summary><div><ul>{% for item in chart.explanation.points %}<li>{{ item }}</li>{% endfor %}</ul><p>{{ chart.explanation.caution }}</p></div></details>{% endif %}
+        <details class="chart-values"><summary>{{ _('Voir les valeurs') }}</summary><div class="mini-table-wrap"><table><thead><tr><th scope="col">{{ _('Élément') }}</th><th scope="col">{{ _('Valeur') }}</th></tr></thead><tbody>{% for value in chart['values'] %}<tr><td>{{ chart['labels'][loop.index0] }}</td><td>{{ value }}</td></tr>{% endfor %}</tbody></table></div></details>
       </div>
     </article>
     {% endfor %}
   </div>
   {% else %}
-  <div class="empty-good">Les données ne contiennent pas encore assez de valeurs pour générer un graphique fiable.</div>
+  <div class="empty-good">{{ _('Les données ne contiennent pas encore assez de valeurs pour générer un graphique fiable.') }}</div>
   {% endif %}
   {% if dashboard.correlations %}
-  <div class="correlations"><h3>Relations entre vos chiffres</h3>{% for item in dashboard.correlations %}<span>{{ item.left }} ↔ {{ item.right }} <b>{{ item.value }}</b></span>{% endfor %}</div>
+  <div class="correlations"><h3>{{ _('Relations entre vos chiffres') }}</h3>{% for item in dashboard.correlations %}<span>{{ item.left }} ↔ {{ item.right }} <b>{{ item.value }}</b></span>{% endfor %}</div>
   {% endif %}
   <script type="application/json" data-dashboard-chart-data>{{ dashboard.charts|tojson }}</script>
 </section>
+
+<section class="card tracked-numbers" id="tracked-numbers" aria-labelledby="tracked-title">
+  <div class="card-head"><div><h3 id="tracked-title">{{ _('Mes chiffres à suivre') }}</h3><p>{{ _('Choisissez un chiffre important pour votre activité. DataPilot le recalcule lorsque le fichier change.') }}</p></div></div>
+  {% if saved_kpis %}
+  <div class="tracked-grid">
+    {% for item in saved_kpis %}
+    <article class="tracked-card {{ item.status }}">
+      <div class="tracked-card-head"><span>{{ item.status_label|tr }}</span><form action="{{ url_for('delete_kpi', project_id=project_id, kpi_id=item.id) }}" method="post" data-confirm="{{ _('Retirer ce chiffre du résumé ?') }}" data-loading-form data-loading-text="{{ _('Retrait…') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button type="submit" aria-label="{{ _('Retirer') }} {{ item.name }}">{{ _('Retirer') }}</button></form></div>
+      <h4>{{ item.name }}</h4>
+      <strong>{{ item.value }}</strong>
+      {% if item.target is not none %}<p>{{ _('Objectif') }} : {{ item.target }} · {{ item.favorable_direction_label|tr }}</p>{% else %}<p>{{ _('Aucun objectif défini.') }}</p>{% endif %}
+      {% if item.progress is not none %}<div class="target-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ item.progress }}"><span style="--progress:{{ item.progress }}%"></span></div>{% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty-guidance">{{ _('Aucun chiffre personnel pour le moment. Ajoutez par exemple votre total de ventes ou votre panier moyen.') }}</p>
+  {% endif %}
+  <details class="feature-builder">
+    <summary>{{ _('Ajouter un chiffre à suivre') }}</summary>
+    <form action="{{ url_for('create_kpi', project_id=project_id) }}" method="post" class="simple-feature-form" data-loading-form data-loading-text="{{ _('Ajout…') }}">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <div class="field"><label for="kpi-name">{{ _('Comment voulez-vous l’appeler ?') }}</label><input id="kpi-name" name="name" maxlength="80" placeholder="{{ _('Ex. Objectif de ventes mensuel') }}"></div>
+      <div class="grid-3">
+        <div class="field"><label for="kpi-measure">{{ _('Quel chiffre utiliser ?') }}</label><select id="kpi-measure" name="measure"><option value="">{{ _('Nombre de lignes') }}</option>{% for option in chart_options.measures %}<option value="{{ option.name }}">{{ option.label }}</option>{% endfor %}</select></div>
+        <div class="field"><label for="kpi-aggregation">{{ _('Comment le calculer ?') }}</label><select id="kpi-aggregation" name="aggregation"><option value="count">{{ _('Compter') }}</option><option value="sum">{{ _('Faire le total') }}</option><option value="mean">{{ _('Calculer la moyenne') }}</option><option value="median">{{ _('Trouver la valeur centrale') }}</option></select></div>
+        <div class="field"><label for="kpi-target">{{ _('Quel est votre objectif ?') }}</label><input id="kpi-target" name="target" inputmode="decimal" placeholder="{{ _('Ex. 10000') }}"></div>
+      </div>
+      <fieldset class="plain-choice"><legend>{{ _('Quel sens est favorable ?') }}</legend><label><input type="radio" name="direction" value="higher" checked> {{ _('Plus le chiffre est élevé, mieux c’est') }}</label><label><input type="radio" name="direction" value="lower"> {{ _('Plus le chiffre est bas, mieux c’est') }}</label></fieldset>
+      <div><button class="btn primary" type="submit" data-submit-button>{{ _('Ajouter à mon résumé') }}</button></div>
+    </form>
+  </details>
+</section>
 {% endif %}
 
+{# ======================= QUALITÉ ======================= #}
 {% if active_section == 'cleaning' %}
-<section class="panel cleaning-panel" id="cleaning" data-reveal>
-  <div class="panel-head">
+{% if run %}
+<section class="quality-summary" aria-label="{{ _('Contrôles qualité') }}">
+  <article class="kpi">
+    <span class="kpi-label">{{ _('Qualité Bronze → Silver') }}</span>
+    {% if run.quality.silver.score > run.quality.bronze.score %}
+    <div class="compare"><span class="from">{{ run.quality.bronze.score }}%</span><span class="arrow">→</span><span class="to">{{ run.quality.silver.score }}%</span></div>
+    <span class="kpi-sub">{{ _('contrôles réussis') }}</span>
+    {% else %}
+    <div class="compare"><span class="to is-pending">{{ run.quality.bronze.score }}%</span></div>
+    <span class="kpi-sub">{{ _('contrôles réussis') }} · {{ _('corrections à valider') }}</span>
+    {% endif %}
+  </article>
+  <article class="kpi">
+    <span class="kpi-label">{{ _('Bronze') }} · {{ _('Données brutes') }}</span>
+    <strong class="kpi-value">{{ run.quality.bronze.passed }}<i>/{{ run.quality.bronze.total }}</i></strong>
+    <div class="tally"><span class="pill pass">{{ run.quality.bronze.passed }} {{ _('réussis') }}</span><span class="pill warn">{{ run.quality.bronze.warnings }} {{ _('alertes') }}</span><span class="pill fail">{{ run.quality.bronze.failed }} {{ _('échecs') }}</span></div>
+  </article>
+  <article class="kpi">
+    <span class="kpi-label">{{ _('Silver') }} · {{ _('Données typées et corrigées') }}</span>
+    <strong class="kpi-value">{{ run.quality.silver.passed }}<i>/{{ run.quality.silver.total }}</i></strong>
+    <div class="tally"><span class="pill pass">{{ run.quality.silver.passed }} {{ _('réussis') }}</span><span class="pill warn">{{ run.quality.silver.warnings }} {{ _('alertes') }}</span><span class="pill fail">{{ run.quality.silver.failed }} {{ _('échecs') }}</span></div>
+  </article>
+</section>
+
+<section class="card" id="contract-checks" aria-labelledby="checks-title">
+  <div class="card-head">
+    <div><span class="eyebrow">{{ _('Contrat de données') }}</span><h3 id="checks-title">{{ _('Contrat de données : avant et après nettoyage') }}</h3><p>{{ _('Chaque règle est évaluée sur la couche Bronze (brute) puis Silver (nettoyée).') }}</p></div>
+    <label class="check-filter"><input type="checkbox" data-toggle-checks> {{ _('Afficher toutes les règles') }}</label>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table checks-table" data-checks-table>
+      <thead><tr><th scope="col">{{ _('Règle') }}</th><th scope="col">{{ _('Colonne') }}</th><th scope="col">{{ _('Bronze') }}</th><th scope="col">{{ _('Silver') }}</th><th scope="col">{{ _('Détail') }}</th></tr></thead>
+      <tbody>
+      {% for row in check_rows %}
+        <tr class="{% if row.bronze.status == 'pass' and row.silver.status == 'pass' %}is-pass{% endif %}">
+          <th scope="row">{{ row.silver.label|tr }}</th>
+          <td>{% if row.silver.column %}<code>{{ row.silver.column }}</code>{% else %}<span class="muted">{{ _('Table') }}</span>{% endif %}</td>
+          <td><span class="pill {{ row.bronze.status }}">{% if row.bronze.status == 'pass' %}{{ _('Réussi') }}{% elif row.bronze.status == 'warn' %}{{ _('Alerte') }}{% else %}{{ _('Échec') }}{% endif %}{% if row.bronze.failing_rows %} · {{ row.bronze.failing_rows }}{% endif %}</span></td>
+          <td><span class="pill {{ row.silver.status }}">{% if row.silver.status == 'pass' %}{{ _('Réussi') }}{% elif row.silver.status == 'warn' %}{{ _('Alerte') }}{% else %}{{ _('Échec') }}{% endif %}{% if row.silver.failing_rows %} · {{ row.silver.failing_rows }}{% endif %}</span></td>
+          <td class="detail">{{ (row.bronze.detail if row.bronze.status != 'pass' else row.silver.detail)|tr }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+<section class="card cleaning-panel" id="cleaning">
+  <div class="card-head">
     <div>
-      <span class="eyebrow">{% if suggestions %}À vérifier{% else %}Tout est en ordre{% endif %}</span>
-      <h2>{% if suggestions %}Corrections proposées{% else %}Aucune correction nécessaire{% endif %}</h2>
-      <p>{% if suggestions %}Cochez seulement les améliorations que vous souhaitez appliquer.{% else %}Votre fichier ne contient plus d’erreur simple à corriger automatiquement.{% endif %}</p>
+      <span class="eyebrow">{% if suggestions %}{{ _('À vérifier') }}{% else %}{{ _('Tout est en ordre') }}{% endif %}</span>
+      <h3>{% if suggestions %}{{ _('Corrections proposées') }}{% else %}{{ _('Aucune correction nécessaire') }}{% endif %}</h3>
+      <p>{% if suggestions %}{{ _('Cochez seulement les améliorations que vous souhaitez appliquer.') }}{% else %}{{ _('Votre fichier ne contient plus d’erreur simple à corriger automatiquement.') }}{% endif %}</p>
     </div>
     <span class="count {% if not suggestions %}is-success{% endif %}">{% if suggestions %}{{ suggestions|length }}{% else %}✓{% endif %}</span>
   </div>
   {% if suggestions %}
-  <form action="{{ url_for('clean', project_id=project_id) }}" method="post" data-loading-form data-async-project data-refresh-targets=".dataset-head,#overview,#automatic-dashboard,#cleaning,#business-words,#chart-studio" data-focus-target="#cleaning" data-loading-text="Corrections en cours…">
+  <form action="{{ url_for('clean', project_id=project_id) }}" method="post" data-loading-form data-loading-text="{{ _('Corrections en cours…') }}">
     <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
     <div class="suggestions">
     {% for suggestion in suggestions %}
       <label class="suggestion">
         <input type="checkbox" name="actions" value="{{ suggestion.id }}" {% if suggestion.severity == 'fort' %}checked{% endif %}>
         <span class="checkmark" aria-hidden="true">✓</span>
-        <span><strong>{{ suggestion.label }}</strong><small>{{ suggestion.description }}</small></span>
-        <em>{{ suggestion.impact }}</em>
+        <span><strong>{{ suggestion.label|tr }}</strong><small>{{ suggestion.description|tr }}</small></span>
+        <em>{{ suggestion.impact|tr }}</em>
       </label>
     {% endfor %}
     </div>
-    <button class="btn primary wide" type="submit" data-submit-button>Appliquer les corrections sélectionnées</button>
-    <div class="loading-state inline-loading" role="status" aria-live="polite" hidden><span class="loading-bar" aria-hidden="true"><i></i></span><strong>Corrections en cours…</strong></div>
+    <button class="btn primary" type="submit" data-submit-button>{{ _('Appliquer les corrections sélectionnées') }}</button>
+    <div class="loading-state" role="status" aria-live="polite" hidden><span class="loading-bar" aria-hidden="true"><i></i></span><strong>{{ _('Corrections en cours…') }}</strong></div>
   </form>
   {% else %}
-    <div class="empty-good">✓ Aucune correction sûre supplémentaire n’est proposée.</div>
-  {% endif %}
-  {% if metadata.cleaned %}
-  <details class="cleaning-more">
-    <summary>Plus d’options</summary>
-    <form action="{{ url_for('reset', project_id=project_id) }}" method="post" class="reset-form" data-loading-form data-async-project data-refresh-targets=".dataset-head,#overview,#automatic-dashboard,#cleaning,#business-words,#chart-studio" data-focus-target="#overview" data-loading-text="Restauration…">
-      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-      <button class="link-button" type="submit" data-submit-button>Revenir au fichier d’origine</button>
-    </form>
-  </details>
+  <div class="empty-good">{{ _('✓ Aucune correction sûre supplémentaire n’est proposée.') }}</div>
   {% endif %}
 
   {% if metadata.cleaning_batches %}
   <div class="cleaning-memory" aria-labelledby="cleaning-memory-title">
     <div>
-      <span class="eyebrow">Historique réversible</span>
-      <h3 id="cleaning-memory-title">Vos étapes restent modifiables</h3>
-      <p>{{ counted_fr(metadata.cleaning_batches|length, 'étape enregistrée', 'étapes enregistrées') }}. Vous pouvez annuler la plus récente ou la transformer en modèle réutilisable.</p>
+      <span class="eyebrow">{{ _('Historique réversible') }}</span>
+      <h4 id="cleaning-memory-title">{{ _('Vos étapes restent modifiables') }}</h4>
+      <p>{{ counted_fr(metadata.cleaning_batches|length, 'étape enregistrée', 'étapes enregistrées')|tr }}. {{ _('Vous pouvez annuler la plus récente ou la transformer en modèle réutilisable.') }}</p>
     </div>
     <div class="cleaning-memory-actions">
-      <form action="{{ url_for('undo_cleaning', project_id=project_id) }}" method="post" data-loading-form data-async-project data-refresh-targets=".dataset-head,#overview,#automatic-dashboard,#cleaning,#business-words,#chart-studio" data-focus-target="#cleaning" data-loading-text="Annulation…">
+      <form action="{{ url_for('undo_cleaning', project_id=project_id) }}" method="post" data-loading-form data-loading-text="{{ _('Annulation…') }}">
         <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-        <button class="btn secondary" type="submit" data-submit-button>Annuler la dernière étape</button>
+        <button class="btn secondary" type="submit" data-submit-button>{{ _('Annuler la dernière étape') }}</button>
       </form>
-      <form action="{{ url_for('save_recipe', project_id=project_id) }}" method="post" class="recipe-form" data-loading-form data-async-project data-refresh-targets="#cleaning" data-focus-target="#cleaning-memory-title" data-loading-text="Enregistrement…">
+      <form action="{{ url_for('save_recipe', project_id=project_id) }}" method="post" class="recipe-form" data-loading-form data-loading-text="{{ _('Enregistrement…') }}">
         <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-        <label for="recipe-name">Nom du modèle</label>
-        <div><input id="recipe-name" name="name" maxlength="80" placeholder="Ex. Nettoyage mensuel"><button class="btn dark" type="submit" data-submit-button>Enregistrer</button></div>
+        <label for="recipe-name">{{ _('Nom du modèle') }}</label>
+        <div><input id="recipe-name" name="name" maxlength="80" placeholder="{{ _('Ex. Nettoyage mensuel') }}"><button class="btn dark" type="submit" data-submit-button>{{ _('Enregistrer') }}</button></div>
       </form>
     </div>
   </div>
   {% endif %}
-
+  {% if metadata.cleaned %}
+  <details class="cleaning-more">
+    <summary>{{ _('Plus d’options') }}</summary>
+    <form action="{{ url_for('reset', project_id=project_id) }}" method="post" class="reset-form" data-loading-form data-loading-text="{{ _('Restauration…') }}" style="margin-top:10px">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <button class="link-button" type="submit" data-submit-button>{{ _('Revenir au fichier d’origine') }}</button>
+    </form>
+  </details>
+  {% endif %}
   {% if recipes %}
   <details class="recipe-library">
-    <summary>Réutiliser un modèle de correction <span>{{ recipes|length }}</span></summary>
+    <summary>{{ _('Réutiliser un modèle de correction') }} ({{ recipes|length }})</summary>
     <div class="recipe-list">
       {% for recipe in recipes %}
-      <div><span><strong>{{ recipe.name }}</strong><small>{{ counted_fr(recipe.actions|length, 'correction prévue', 'corrections prévues') }}</small></span><form action="{{ url_for('apply_recipe', project_id=project_id, recipe_id=recipe.id) }}" method="post" data-loading-form data-async-project data-refresh-targets=".dataset-head,#overview,#automatic-dashboard,#cleaning,#business-words,#chart-studio" data-focus-target="#cleaning" data-loading-text="Application…"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button type="submit" class="link-button" data-submit-button>Utiliser</button></form></div>
+      <div><span><strong>{{ recipe.name }}</strong><small>{{ counted_fr(recipe.actions|length, 'correction prévue', 'corrections prévues')|tr }}</small></span><form action="{{ url_for('apply_recipe', project_id=project_id, recipe_id=recipe.id) }}" method="post" data-loading-form data-loading-text="{{ _('Application…') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button type="submit" class="link-button" data-submit-button>{{ _('Utiliser') }}</button></form></div>
       {% endfor %}
     </div>
   </details>
@@ -271,8 +339,164 @@
 </section>
 {% endif %}
 
+{# ======================= PIPELINE ======================= #}
+{% if active_section == 'pipeline' %}
+{% if run %}
+<section class="card" id="pipeline-run" aria-labelledby="dag-title">
+  <div class="card-head">
+    <div><span class="eyebrow">{{ _('Dernière exécution') }} · <code>{{ run.run_id }}</code></span><h3 id="dag-title">Bronze → {{ _('Contrat') }} → Silver → Gold</h3></div>
+    <span class="pill pass">success · {{ run.duration_ms|duration }}</span>
+  </div>
+  <div class="dag">
+    {% set styles = {'ingest_bronze': 'bronze', 'validate_contract': 'contract', 'transform_silver': 'silver', 'publish_gold': 'gold'} %}
+    {% set stage_labels = {'ingest_bronze': 'Ingestion → Bronze', 'validate_contract': 'Validation du contrat', 'transform_silver': 'Transformation → Silver', 'publish_gold': 'Publication → Gold'} %}
+    {% for stage in run.stages %}
+    <div class="dag-node {{ styles.get(stage.name, '') }}">
+      <div class="dag-top"><strong>{{ _(stage_labels.get(stage.name, stage.name)) }}</strong><span class="pill pass plain">{{ stage.duration_ms|duration }}</span></div>
+      <div class="dag-stats">
+        <span><b>{{ stage.rows_in|thousands }}</b> {{ _('lignes entrées') }}</span>
+        <span><b>{{ stage.rows_out|thousands }}</b> {{ _('lignes sorties') }}</span>
+        {% if stage.checks %}<span><b>{{ stage.checks.passed }}/{{ stage.checks.total }}</b> {{ _('contrôles réussis') }}</span>{% endif %}
+        {% if stage.tables %}<span><b>{{ stage.tables|length }}</b> {{ _('tables') }}</span>{% endif %}
+      </div>
+      <code>{{ stage.name }} → {{ stage.output }}</code>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="run-meta">
+    <span class="chip">{{ _('Déclencheur') }} <b>{{ _(run.trigger) }}</b></span>
+    <span class="chip">{{ _('Début') }} <b>{{ run.started_at|when }}</b></span>
+    <span class="chip">{{ _('Sources') }} <b>{{ metadata.original_filename|truncate(40, True, '…') }}</b> · {{ run.input.bytes|filesize }}</span>
+    <span class="chip">SHA-256 <b class="mono">{{ run.input.sha256[:16] }}…</b></span>
+  </div>
+</section>
+
+<section aria-labelledby="layers-title" style="display:grid;gap:14px">
+  <h3 id="layers-title">{{ _('Couches du lakehouse') }}</h3>
+  <div class="layers-grid">
+    {% for layer in layers %}
+    <article class="layer-card">
+      <div><span class="layer-tag {{ layer.key }}">{{ _(layer.label) }}</span></div>
+      <div class="layer-num">{{ layer.rows|thousands }} <small>{{ _('lignes') }} · {{ layer.bytes|filesize }}</small></div>
+      <p>{{ _(layer.description) }}</p>
+      <ul>
+        {% for table in layer.tables %}<li><code>{{ table.name }}</code><span>{{ table.rows|thousands }} × {{ table.columns|length }}</span></li>{% endfor %}
+      </ul>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="card" aria-labelledby="runs-title">
+  <div class="card-head"><div><span class="eyebrow">{{ _('Lineage et journal') }}</span><h3 id="runs-title">{{ _('Historique des exécutions') }}</h3></div></div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th scope="col">{{ _('Exécution') }}</th><th scope="col">{{ _('Déclencheur') }}</th><th scope="col">{{ _('Début') }}</th><th scope="col" class="num">{{ _('Durée') }}</th><th scope="col">{{ _('Empreinte SHA-256') }}</th><th scope="col" class="num">{{ _('Lignes') }}</th><th scope="col">{{ _('Qualité Bronze → Silver') }}</th></tr></thead>
+      <tbody>
+        {% for item in runs %}
+        <tr>
+          <td><code>{{ item.run_id }}</code></td>
+          <td><span class="pill neutral plain">{{ _(item.trigger) }}</span></td>
+          <td>{{ item.started_at|when }}</td>
+          <td class="num">{{ item.duration_ms|duration }}</td>
+          <td><code>{{ item.input.sha256[:12] }}</code></td>
+          <td class="num">{{ item.rows.bronze|thousands }} → {{ item.rows.silver|thousands }}</td>
+          <td>{{ item.quality.bronze.score }} % → <strong>{{ item.quality.silver.score }} %</strong></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card" aria-labelledby="contract-title">
+  <div class="card-head"><div><span class="eyebrow">contract.json</span><h3 id="contract-title">{{ _('Contrat inféré') }}</h3></div></div>
+  <div class="table-wrap" style="max-height:420px">
+    <table class="data-table">
+      <thead><tr><th scope="col">{{ _('Colonne') }}</th><th scope="col">{{ _('Type attendu') }}</th><th scope="col">{{ _('Obligatoire') }}</th><th scope="col">{{ _('Unique') }}</th><th scope="col">{{ _('Plage') }}</th><th scope="col">{{ _('Catégoriel') }}</th></tr></thead>
+      <tbody>
+        {% for spec in contract.columns %}
+        <tr>
+          <td><code>{{ spec.name }}</code></td>
+          <td><span class="pill accent plain">{{ spec.type }}</span></td>
+          <td>{% if spec.required %}{{ _('oui') }}{% else %}<span class="muted">{{ _('non') }}</span>{% endif %}</td>
+          <td>{% if spec.unique %}{{ _('oui') }}{% else %}<span class="muted">{{ _('non') }}</span>{% endif %}</td>
+          <td>{% if spec.min is not none or spec.max is not none %}{{ spec.min if spec.min is not none else '−∞' }} … {{ spec.max if spec.max is not none else '+∞' }}{% else %}<span class="muted">—</span>{% endif %}</td>
+          <td>{% if spec.categorical %}{{ _('oui') }}{% else %}<span class="muted">{{ _('non') }}</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card" aria-labelledby="api-title">
+  <div class="card-head"><div><span class="eyebrow">REST · JSON</span><h3 id="api-title">{{ _('API de service') }}</h3><p>{{ _('Les couches sont exposées en JSON pour un outil BI, un notebook ou une autre application.') }}</p></div></div>
+  <div class="api-list">
+    <div><span class="verb">GET</span><a href="{{ url_for('api_project_runs', project_id=project_id) }}" target="_blank" rel="noopener">{{ url_for('api_project_runs', project_id=project_id) }}</a><span>{{ _('Historique des exécutions') }}</span></div>
+    <div><span class="verb">GET</span><a href="{{ url_for('api_project_quality', project_id=project_id) }}" target="_blank" rel="noopener">{{ url_for('api_project_quality', project_id=project_id) }}</a><span>{{ _('Contrôles qualité') }}</span></div>
+    {% for table in table_schemas %}
+    <div><span class="verb">GET</span><a href="{{ url_for('api_project_table', project_id=project_id, table=table.name) }}" target="_blank" rel="noopener">{{ url_for('api_project_table', project_id=project_id, table=table.name) }}</a><span>{{ table.rows|thousands }} {{ _('lignes') }}</span></div>
+    {% endfor %}
+  </div>
+</section>
+{% else %}
+<div class="card"><p class="muted">{{ _('Aucune exécution pour le moment.') }}</p></div>
+{% endif %}
+{% endif %}
+
+{# ======================= SQL ======================= #}
+{% if active_section == 'sql' %}
+<section class="sql-layout" id="sql-console">
+  <div>
+    <form action="{{ url_for('run_project_sql', project_id=project_id) }}#sql-result" method="post" data-loading-form data-loading-text="{{ _('Exécution de la requête…') }}">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <div class="sql-editor">
+        <div class="sql-editor-bar"><i></i><i></i><i></i> duckdb · read-only</div>
+        <label class="sr-only" for="sql-query">SQL</label>
+        <textarea id="sql-query" name="query" spellcheck="false" data-sql-editor>{{ sql_query }}</textarea>
+      </div>
+      <div class="sql-actions">
+        <button class="btn primary" type="submit" data-submit-button>{{ icon('play') }} {{ _('Exécuter') }}</button>
+        <div class="sql-examples" aria-label="{{ _('Exemples') }}">
+          {% for example in sql_examples %}<button type="button" data-sql-example="{{ example.query }}">{{ _(example.label) }}</button>{% endfor %}
+        </div>
+      </div>
+    </form>
+
+    <section id="sql-result" style="margin-top:22px">
+      {% if sql_error %}
+      <div class="sql-error" role="alert">{{ sql_error|tr }}</div>
+      {% elif sql_result %}
+      <div class="sql-result-head">
+        <h3>{{ _('Résultat') }}</h3>
+        <div class="tally" style="margin:0"><span class="pill accent plain">{{ sql_result.row_count|thousands }} {{ _('ligne(s)') }}</span><span class="pill neutral plain">{{ sql_result.elapsed_ms }} ms</span>{% if sql_result.truncated %}<span class="pill warn">{{ _('résultat tronqué') }}</span>{% endif %}</div>
+      </div>
+      {% if sql_result.rows %}
+      <div class="table-wrap result-table">
+        <table class="data-table">
+          <thead><tr>{% for column in sql_result.columns %}<th scope="col">{{ column }}</th>{% endfor %}</tr></thead>
+          <tbody>{% for row in sql_result.rows %}<tr>{% for value in row %}<td class="{% if value is number %}num{% endif %}">{% if value is none %}<span class="muted">NULL</span>{% elif value is number %}{{ value|number }}{% else %}{{ value }}{% endif %}</td>{% endfor %}</tr>{% endfor %}</tbody>
+        </table>
+      </div>
+      {% else %}<p class="muted">{{ _('Aucune ligne ne correspond à cette requête.') }}</p>{% endif %}
+      {% endif %}
+    </section>
+  </div>
+  <aside class="schema-list" aria-label="{{ _('Tables disponibles') }}">
+    <h3 style="font-size:15px">{{ _('Tables disponibles') }}</h3>
+    {% for table in table_schemas|sort(attribute='layer', reverse=True) %}
+    <details {% if table.layer == 'gold' %}open{% endif %}>
+      <summary><span class="layer-tag {{ table.layer }}">{{ table.layer }}</span>{{ table.name }} <small>{{ table.rows|thousands }}</small></summary>
+      <ul>{% for column in table.columns %}<li>{{ column.name }}<span>{{ column.type }}</span></li>{% endfor %}</ul>
+    </details>
+    {% endfor %}
+  </aside>
+</section>
+{% endif %}
+
 {% if active_section == 'names' %}
-<section class="language-workspace" data-reveal>
+<section class="card language-workspace">
   {% include "_business_words.html" %}
 </section>
 {% endif %}
@@ -282,31 +506,33 @@
 {% endif %}
 </div>
 
-<footer class="project-next-step">
+<footer class="next-step">
   {% if current_section.next %}
-  <div>
-    <small>Étape {{ current_section.number }} terminée</small>
-    <strong>{{ current_section.next_label }}</strong>
-  </div>
-  <a class="btn primary" href="{{ url_for('project', project_id=project_id, section=current_section.next) }}">
-    Continuer <span aria-hidden="true">→</span>
-  </a>
+  <div><small>{{ _('Suivant') }}</small><strong>{{ _(project_sections[current_section.next].label) }} · {{ _(project_sections[current_section.next].description) }}</strong></div>
+  <a class="btn primary" href="{{ url_for('project', project_id=project_id, section=current_section.next) }}">{{ _('Continuer') }} <span aria-hidden="true">→</span></a>
   {% else %}
-  <div>
-    <small>Votre analyse est prête</small>
-    <strong>Téléchargez le résultat</strong>
-  </div>
-  <a class="btn primary" href="{{ url_for('export', project_id=project_id, fmt='xlsx') }}" download>
-    Télécharger Excel <span aria-hidden="true">↓</span>
-  </a>
+  <div><small>{{ _('Analyse prête') }}</small><strong>{{ _('Télécharger Excel') }}</strong></div>
+  <a class="btn primary" href="{{ url_for('export', project_id=project_id, fmt='xlsx') }}" download>{{ _('Télécharger Excel') }} <span aria-hidden="true">↓</span></a>
   {% endif %}
 </footer>
-</section>
+  </section>
+</div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='vendor/chart.umd.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='project.js', v='20260718-export2') }}"></script>
-<script>window.DataPilotCharts?.initialize(document);</script>
+<script src="{{ url_for('static', filename='project.js', v='20260925-1') }}"></script>
+<script>
+window.DataPilotCharts?.initialize(document);
+document.querySelector('[data-toggle-checks]')?.addEventListener('change', (event) => {
+  document.querySelector('[data-checks-table]')?.classList.toggle('show-all', event.target.checked);
+});
+document.querySelectorAll('[data-sql-example]').forEach((button) => button.addEventListener('click', () => {
+  const editor = document.querySelector('[data-sql-editor]');
+  if (!editor) return;
+  editor.value = button.dataset.sqlExample;
+  editor.focus();
+}));
+</script>
 {% endblock %}

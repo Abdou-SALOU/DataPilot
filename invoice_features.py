@@ -565,8 +565,28 @@ def _extract_pdf(path: Path) -> dict[str, Any]:
     return result
 
 
+def _extract_image_with_rapidocr(path: Path) -> str:
+    """OCR local sans installation système : lignes reconstruites même sur photo inclinée."""
+    try:
+        layout = importlib.import_module("ocr_layout")
+        lines = layout.read_lines(path)["lines"]
+    except Exception:
+        return ""
+    return "\n".join(line["text"] for line in lines).strip()
+
+
 def _extract_image(path: Path) -> dict[str, Any]:
     result = _base_extraction(path)
+    text = _extract_image_with_rapidocr(path)
+    if text:
+        result.update(
+            status="extracted",
+            message="Le texte de l'image a été lu localement.",
+            method="rapidocr",
+            pages=1,
+            text=text,
+        )
+        return result
     try:
         image_module = importlib.import_module("PIL.Image")
         pytesseract = importlib.import_module("pytesseract")

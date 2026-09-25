@@ -1,50 +1,45 @@
-<section class="chart-studio" id="chart-studio" data-reveal>
-  <div class="section-head">
-    <div><span class="eyebrow">Vos données en images</span><h2>Créez un graphique simplement</h2><p>Choisissez un élément. DataPilot s’occupe du calcul et de la présentation.</p></div>
-    <span class="section-count" aria-label="{{ counted_fr(custom_charts|length, 'graphique enregistré', 'graphiques enregistrés') }}">{{ custom_charts|length }}</span>
-  </div>
+<section class="chart-studio" id="chart-studio" style="display:grid;gap:20px">
   {% if chart_notice %}
-  <div class="chart-notice {{ chart_notice.level|default('info') }}" role="{% if chart_notice.level == 'warn' %}alert{% else %}status{% endif %}">{{ chart_notice.text }}</div>
+  <div class="chart-notice {{ chart_notice.level|default('info') }}" role="{% if chart_notice.level == 'warn' %}alert{% else %}status{% endif %}">{{ chart_notice.text|tr }}</div>
   {% endif %}
-  <div class="chart-builder-shell">
+  <div class="card chart-builder-shell">
     <div class="chart-builder-copy">
-      <span class="builder-icon" aria-hidden="true">↗</span>
-      <h3>Que voulez-vous voir ?</h3>
-      <p>Choisissez une colonne. Le type de graphique le plus lisible sera sélectionné automatiquement.</p>
-      <ul><li><span aria-hidden="true">▥</span> Comparer des éléments</li><li><span aria-hidden="true">⌁</span> Suivre une évolution</li><li><span aria-hidden="true">◔</span> Voir une répartition</li></ul>
+      <span class="eyebrow">{{ _('Vos données en images') }}</span>
+      <h3>{{ _('Que voulez-vous voir ?') }}</h3>
+      <p>{{ _('Choisissez une colonne. Le type de graphique le plus lisible sera sélectionné automatiquement.') }}</p>
+      <ul><li><span aria-hidden="true">▥</span> {{ _('Comparer des éléments') }}</li><li><span aria-hidden="true">⌁</span> {{ _('Suivre une évolution') }}</li><li><span aria-hidden="true">◔</span> {{ _('Voir une répartition') }}</li></ul>
     </div>
-    <form class="chart-builder" action="{{ url_for('create_chart', project_id=project_id) }}" method="post" data-loading-form data-async-project data-async-json data-refresh-targets="#chart-studio" data-focus-target="#chart-studio" data-loading-text="Création du graphique…">
+    <form class="chart-builder" action="{{ url_for('create_chart', project_id=project_id) }}" method="post" data-loading-form data-async-project data-async-json data-refresh-targets="#chart-studio" data-focus-target="#chart-studio" data-loading-text="{{ _('Création du graphique…') }}">
       <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-      <label for="chart-dimension">Quel élément voulez-vous regarder ?</label>
-      <select id="chart-dimension" name="dimension" required><option value="">Choisir dans le fichier…</option>{% for option in chart_options.dimensions %}<option value="{{ option.name }}">{{ option.label }}</option>{% endfor %}</select>
+      <label for="chart-dimension">{{ _('Quel élément voulez-vous regarder ?') }}</label>
+      <select id="chart-dimension" name="dimension" required><option value="">{{ _('Choisir dans le fichier…') }}</option>{% for option in chart_options.dimensions %}<option value="{{ option.name }}">{{ option.label|tr }}</option>{% endfor %}</select>
       <details class="chart-advanced-options">
-        <summary>Options de calcul <small>Facultatif</small></summary>
+        <summary>{{ _('Options de calcul') }} <small>{{ _('Facultatif') }}</small></summary>
         <div class="builder-row">
-          <div><label for="chart-aggregation">Quel calcul ?</label><select id="chart-aggregation" name="aggregation"><option value="count">Compter les lignes</option><option value="mean">Calculer la moyenne</option><option value="sum">Calculer la somme</option><option value="median">Trouver la valeur centrale</option></select></div>
-          <div><label for="chart-measure">Quelle valeur ?</label><select id="chart-measure" name="measure" disabled><option value="">Aucune pour ce calcul</option>{% for option in chart_options.measures %}<option value="{{ option.name }}">{{ option.label }}</option>{% endfor %}</select></div>
+          <div><label for="chart-aggregation">{{ _('Quel calcul ?') }}</label><select id="chart-aggregation" name="aggregation"><option value="count">{{ _('Compter les lignes') }}</option><option value="mean">{{ _('Calculer la moyenne') }}</option><option value="sum">{{ _('Calculer la somme') }}</option><option value="median">{{ _('Trouver la valeur centrale') }}</option></select></div>
+          <div><label for="chart-measure">{{ _('Quelle valeur ?') }}</label><select id="chart-measure" name="measure" disabled><option value="">{{ _('Aucune pour ce calcul') }}</option>{% for option in chart_options.measures %}<option value="{{ option.name }}">{{ option.label }}</option>{% endfor %}</select></div>
         </div>
-        <label for="chart-type">Quelle présentation ?</label>
-        <select id="chart-type" name="chart_type"><option value="auto">Laisser DataPilot choisir</option><option value="bar">Barres</option><option value="line">Courbe</option><option value="doughnut">Anneau</option></select>
+        <div class="field" style="margin-top:12px"><label for="chart-type">{{ _('Quelle présentation ?') }}</label>
+        <select id="chart-type" name="chart_type"><option value="auto">{{ _('Laisser DataPilot choisir') }}</option><option value="bar">{{ _('Barres') }}</option><option value="line">{{ _('Courbe') }}</option><option value="doughnut">{{ _('Anneau') }}</option></select></div>
       </details>
-      <button class="btn primary wide" type="submit" data-submit-button>Créer mon graphique <span aria-hidden="true">→</span></button>
-      <div class="loading-state inline-loading" role="status" aria-live="polite" hidden><span class="loading-bar" aria-hidden="true"><i></i></span><strong>Création du graphique…</strong></div>
+      <button class="btn primary wide" type="submit" data-submit-button>{{ _('Créer mon graphique') }} <span aria-hidden="true">→</span></button>
+      <div class="loading-state" role="status" aria-live="polite" hidden><span class="loading-bar" aria-hidden="true"><i></i></span><strong>{{ _('Création du graphique…') }}</strong></div>
     </form>
   </div>
 
   {% if custom_charts %}
-  <div class="custom-chart-heading"><div><span class="eyebrow">Votre sélection</span><h3>Graphiques enregistrés</h3></div><small>Ils restent disponibles avec ce fichier.</small></div>
+  <div class="custom-chart-heading"><div><span class="eyebrow">{{ _('Votre sélection') }}</span><h3>{{ _('Graphiques enregistrés') }}</h3></div><small>{{ counted_fr(custom_charts|length, 'graphique enregistré', 'graphiques enregistrés')|tr }} · {{ _('Ils restent disponibles avec ce fichier.') }}</small></div>
   <div class="charts-grid custom-charts-grid">
     {% for chart in custom_charts %}
     <article class="chart-card custom-chart-card">
-      <div class="chart-card-head"><span>Créé par vous</span><div class="chart-actions"><button type="button" class="chart-download" data-canvas="customChart{{ loop.index0 }}">Télécharger PNG</button><form action="{{ url_for('delete_chart', project_id=project_id, chart_id=chart.id) }}" method="post" data-confirm="Supprimer définitivement ce graphique ?" data-loading-form data-async-project data-async-json data-refresh-targets="#chart-studio" data-focus-target="#chart-studio" data-loading-text="Suppression…"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button type="submit" class="chart-delete">Supprimer</button></form></div></div>
+      <div class="chart-card-head"><span>{{ _('Créé par vous') }}</span><div class="chart-actions"><button type="button" class="chart-download" data-canvas="customChart{{ loop.index0 }}">{{ _('Télécharger PNG') }}</button><form action="{{ url_for('delete_chart', project_id=project_id, chart_id=chart.id) }}" method="post" data-confirm="{{ _('Supprimer définitivement ce graphique ?') }}" data-loading-form data-async-project data-async-json data-refresh-targets="#chart-studio" data-focus-target="#chart-studio" data-loading-text="{{ _('Suppression…') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button type="submit" class="chart-delete">{{ _('Supprimer') }}</button></form></div></div>
       <h3>{{ chart.title }}</h3>
       {% if chart.subtitle %}<p class="chart-subtitle">{{ chart.subtitle }}</p>{% endif %}
-      <div class="chart-canvas-wrap"><canvas id="customChart{{ loop.index0 }}" height="225" role="img" aria-label="Graphique : {{ chart.title }}"></canvas></div>
-      <p class="chart-caption">{{ chart.subtitle or 'Graphique calculé à partir de votre sélection.' }}</p>
-      <p class="chart-render-error" hidden>Le graphique ne peut pas être affiché pour le moment.</p>
+      <div class="chart-canvas-wrap"><canvas id="customChart{{ loop.index0 }}" height="225" role="img" aria-label="{{ chart.title }}"></canvas></div>
+      <p class="chart-render-error" hidden>{{ _('Le graphique ne peut pas être affiché pour le moment.') }}</p>
       <div class="chart-help-row">
-        {% if chart.explanation %}<details class="chart-explanation"><summary>Comprendre le point le plus élevé</summary><div><ul>{% for item in chart.explanation.points %}<li>{{ item }}</li>{% endfor %}</ul><p>{{ chart.explanation.caution }}</p></div></details>{% endif %}
-        <details class="chart-values"><summary>Voir les valeurs</summary><div class="mini-table-wrap"><table><thead><tr><th scope="col">Élément</th><th scope="col">Valeur</th></tr></thead><tbody>{% for value in chart['values'] %}<tr><td>{{ chart['labels'][loop.index0] }}</td><td>{{ value }}</td></tr>{% endfor %}</tbody></table></div></details>
+        {% if chart.explanation %}<details class="chart-explanation"><summary>{{ _('Comprendre le point le plus élevé') }}</summary><div><ul>{% for item in chart.explanation.points %}<li>{{ item }}</li>{% endfor %}</ul><p>{{ chart.explanation.caution }}</p></div></details>{% endif %}
+        <details class="chart-values"><summary>{{ _('Voir les valeurs') }}</summary><div class="mini-table-wrap"><table><thead><tr><th scope="col">{{ _('Élément') }}</th><th scope="col">{{ _('Valeur') }}</th></tr></thead><tbody>{% for value in chart['values'] %}<tr><td>{{ chart['labels'][loop.index0] }}</td><td>{{ value }}</td></tr>{% endfor %}</tbody></table></div></details>
       </div>
     </article>
     {% endfor %}

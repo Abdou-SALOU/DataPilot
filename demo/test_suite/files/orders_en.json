@@ -1,0 +1,1456 @@
+{
+ "data": [
+  {
+   "order_id": "ORD-0001",
+   "order_date": "2026-07-05",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Wholesale"
+   },
+   "product": "Savon noir",
+   "quantity": 3,
+   "amount": 75.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0002",
+   "order_date": "2026-07-03",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Wholesale"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 3,
+   "amount": 54.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0003",
+   "order_date": "2026-08-07",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Retail"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 1,
+   "amount": 32.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0004",
+   "order_date": "2026-09-04",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Wholesale"
+   },
+   "product": "Dattes Medjool 500 g",
+   "quantity": 1,
+   "amount": 75.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0005",
+   "order_date": "2026-07-14",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Savon noir",
+   "quantity": 3,
+   "amount": 75.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0006",
+   "order_date": "2026-07-11",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 1,
+   "amount": null,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0007",
+   "order_date": "2026-07-07",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Retail"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 1,
+   "amount": 36.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0008",
+   "order_date": "2026-07-04",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 1,
+   "amount": 18.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0009",
+   "order_date": "2026-07-09",
+   "customer": {
+    "city": "Fès",
+    "segment": "Retail"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 1,
+   "amount": 18.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0010",
+   "order_date": "2026-09-07",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Shampooing argan",
+   "quantity": 1,
+   "amount": 68.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0011",
+   "order_date": "2026-07-17",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Retail"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 2,
+   "amount": 64.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0012",
+   "order_date": "2026-09-04",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Retail"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 2,
+   "amount": 36.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0013",
+   "order_date": "2026-07-16",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Savon noir",
+   "quantity": 4,
+   "amount": 100.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0014",
+   "order_date": "2026-08-23",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Wholesale"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 1,
+   "amount": 36.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0015",
+   "order_date": "2026-08-17",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 3,
+   "amount": 135.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0016",
+   "order_date": "2026-07-25",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Wholesale"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 3,
+   "amount": 135.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0017",
+   "order_date": "2026-09-26",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Wholesale"
+   },
+   "product": "Huile d'olive 1 L",
+   "quantity": 2,
+   "amount": 178.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0018",
+   "order_date": "2026-08-02",
+   "customer": {
+    "city": "casablanca ",
+    "segment": "Wholesale"
+   },
+   "product": "Dattes Medjool 500 g",
+   "quantity": 4,
+   "amount": 300.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0019",
+   "order_date": "2026-08-24",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Wholesale"
+   },
+   "product": "Savon noir",
+   "quantity": 2,
+   "amount": 50.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0020",
+   "order_date": "2026-09-13",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 3,
+   "amount": 96.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0021",
+   "order_date": "2026-08-14",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 1,
+   "amount": 36.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0022",
+   "order_date": "2026-09-20",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Wholesale"
+   },
+   "product": "Savon noir",
+   "quantity": 4,
+   "amount": 100.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0023",
+   "order_date": "2026-07-01",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Dattes Medjool 500 g",
+   "quantity": 4,
+   "amount": 300.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0024",
+   "order_date": "2026-08-27",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Shampooing argan",
+   "quantity": 3,
+   "amount": 204.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0025",
+   "order_date": "2026-07-01",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Savon noir",
+   "quantity": 4,
+   "amount": 100.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0026",
+   "order_date": "2026-08-13",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Wholesale"
+   },
+   "product": "Savon noir",
+   "quantity": 2,
+   "amount": 50.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0027",
+   "order_date": "2026-08-03",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Wholesale"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 4,
+   "amount": 144.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0028",
+   "order_date": "2026-09-17",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Retail"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 4,
+   "amount": 128.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0029",
+   "order_date": "2026-07-26",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Retail"
+   },
+   "product": "Savon noir",
+   "quantity": 4,
+   "amount": 100.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0030",
+   "order_date": "2026-09-11",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Wholesale"
+   },
+   "product": "Dattes Medjool 500 g",
+   "quantity": 4,
+   "amount": 300.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0031",
+   "order_date": "2026-07-25",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Huile d'olive 1 L",
+   "quantity": 1,
+   "amount": 89.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0032",
+   "order_date": "2026-07-25",
+   "customer": {
+    "city": "Fès",
+    "segment": "Retail"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 1,
+   "amount": 32.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0033",
+   "order_date": "2026-07-03",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Retail"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 4,
+   "amount": 128.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0034",
+   "order_date": "2026-07-16",
+   "customer": {
+    "city": "Fès",
+    "segment": "Retail"
+   },
+   "product": "Shampooing argan",
+   "quantity": 3,
+   "amount": 204.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0035",
+   "order_date": "2026-08-28",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 2,
+   "amount": 72.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0036",
+   "order_date": "2026-08-14",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Wholesale"
+   },
+   "product": "Dattes Medjool 500 g",
+   "quantity": 4,
+   "amount": 300.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0037",
+   "order_date": "2026-07-14",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Wholesale"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 2,
+   "amount": 90.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0038",
+   "order_date": "2026-08-03",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 1,
+   "amount": 45.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0039",
+   "order_date": "2026-09-26",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Shampooing argan",
+   "quantity": 4,
+   "amount": 272.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0040",
+   "order_date": "2026-07-03",
+   "customer": {
+    "city": "Fès",
+    "segment": "Retail"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 3,
+   "amount": 135.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0041",
+   "order_date": "2026-07-05",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Wholesale"
+   },
+   "product": "Savon noir",
+   "quantity": 2,
+   "amount": 50.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0042",
+   "order_date": "2026-07-15",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Retail"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 2,
+   "amount": 72.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0043",
+   "order_date": "2026-07-19",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Savon noir",
+   "quantity": 1,
+   "amount": 25.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0044",
+   "order_date": "2026-09-05",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 1,
+   "amount": 18.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0045",
+   "order_date": "2026-08-10",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Wholesale"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 1,
+   "amount": 45.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0046",
+   "order_date": "2026-09-17",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Wholesale"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 4,
+   "amount": 72.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0047",
+   "order_date": "2026-07-10",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Dattes Medjool 500 g",
+   "quantity": 4,
+   "amount": 300.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0048",
+   "order_date": "2026-09-09",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 4,
+   "amount": 128.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0049",
+   "order_date": "2026-08-20",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Huile d'olive 1 L",
+   "quantity": 3,
+   "amount": 267.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0050",
+   "order_date": "2026-09-18",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 3,
+   "amount": 108.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0051",
+   "order_date": "2026-08-21",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 1,
+   "amount": 32.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0052",
+   "order_date": "2026-07-04",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Retail"
+   },
+   "product": "Shampooing argan",
+   "quantity": 1,
+   "amount": 68.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0053",
+   "order_date": "2026-07-09",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Retail"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 4,
+   "amount": 72.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0054",
+   "order_date": "2026-09-25",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Huile d'olive 1 L",
+   "quantity": 3,
+   "amount": 267.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0055",
+   "order_date": "2026-07-04",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 1,
+   "amount": 32.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0056",
+   "order_date": "2026-08-13",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Wholesale"
+   },
+   "product": "Shampooing argan",
+   "quantity": 3,
+   "amount": 204.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0057",
+   "order_date": "2026-08-24",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Retail"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 4,
+   "amount": 72.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0058",
+   "order_date": "2026-08-10",
+   "customer": {
+    "city": "Fès",
+    "segment": "Retail"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 2,
+   "amount": 64.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0059",
+   "order_date": "2026-09-21",
+   "customer": {
+    "city": "Fès",
+    "segment": "Retail"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 1,
+   "amount": 45.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0060",
+   "order_date": "2026-07-26",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 2,
+   "amount": 36.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0061",
+   "order_date": "2026-07-21",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Wholesale"
+   },
+   "product": "Dattes Medjool 500 g",
+   "quantity": 2,
+   "amount": 150.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0062",
+   "order_date": "2026-08-17",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 1,
+   "amount": 18.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0063",
+   "order_date": "2026-08-09",
+   "customer": {
+    "city": "Fès",
+    "segment": "Retail"
+   },
+   "product": "Shampooing argan",
+   "quantity": 4,
+   "amount": 272.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0064",
+   "order_date": "2026-09-13",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Shampooing argan",
+   "quantity": 1,
+   "amount": 68.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0065",
+   "order_date": "2026-09-26",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Wholesale"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 4,
+   "amount": 72.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0066",
+   "order_date": "2026-08-03",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Shampooing argan",
+   "quantity": 3,
+   "amount": 204.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0067",
+   "order_date": "2026-07-21",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Savon noir",
+   "quantity": 3,
+   "amount": 75.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0068",
+   "order_date": "2026-08-26",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Savon noir",
+   "quantity": 3,
+   "amount": 75.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0069",
+   "order_date": "2026-08-21",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Retail"
+   },
+   "product": "Shampooing argan",
+   "quantity": 2,
+   "amount": 136.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0070",
+   "order_date": "2026-07-03",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Retail"
+   },
+   "product": "Shampooing argan",
+   "quantity": 2,
+   "amount": 136.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0071",
+   "order_date": "2026-08-09",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Wholesale"
+   },
+   "product": "Savon noir",
+   "quantity": 1,
+   "amount": 25.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0072",
+   "order_date": "2026-09-26",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 2,
+   "amount": 72.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0073",
+   "order_date": "2026-08-24",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Huile d'olive 1 L",
+   "quantity": 1,
+   "amount": 89.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0074",
+   "order_date": "2026-07-21",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 1,
+   "amount": 36.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0075",
+   "order_date": "2026-07-04",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 4,
+   "amount": 72.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0076",
+   "order_date": "2026-09-13",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Retail"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 3,
+   "amount": 54.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0077",
+   "order_date": "2026-08-15",
+   "customer": {
+    "city": "Fès",
+    "segment": "Retail"
+   },
+   "product": "Dattes Medjool 500 g",
+   "quantity": 3,
+   "amount": 225.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0078",
+   "order_date": "2026-09-13",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Wholesale"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 3,
+   "amount": 135.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0079",
+   "order_date": "2026-07-06",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 2,
+   "amount": 90.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0080",
+   "order_date": "2026-09-11",
+   "customer": {
+    "city": "Fès",
+    "segment": "Retail"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 2,
+   "amount": 36.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0081",
+   "order_date": "2026-09-26",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Retail"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 4,
+   "amount": 72.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0082",
+   "order_date": "2026-09-09",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 4,
+   "amount": 144.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0083",
+   "order_date": "2026-09-15",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Huile d'olive 1 L",
+   "quantity": 4,
+   "amount": 356.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0084",
+   "order_date": "2026-08-14",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Wholesale"
+   },
+   "product": "Dattes Medjool 500 g",
+   "quantity": 3,
+   "amount": 225.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0085",
+   "order_date": "2026-09-22",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Wholesale"
+   },
+   "product": "Shampooing argan",
+   "quantity": 2,
+   "amount": 136.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0086",
+   "order_date": "2026-07-03",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Retail"
+   },
+   "product": "Dattes Medjool 500 g",
+   "quantity": 3,
+   "amount": 225.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0087",
+   "order_date": "2026-07-16",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Wholesale"
+   },
+   "product": "Shampooing argan",
+   "quantity": 4,
+   "amount": 272.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0088",
+   "order_date": "2026-09-09",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Retail"
+   },
+   "product": "Savon noir",
+   "quantity": 4,
+   "amount": 100.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0089",
+   "order_date": "2026-09-03",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Retail"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 1,
+   "amount": 32.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0090",
+   "order_date": "2026-08-15",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 2,
+   "amount": 64.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0091",
+   "order_date": "2026-08-15",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 4,
+   "amount": 128.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0092",
+   "order_date": "2026-08-19",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Retail"
+   },
+   "product": "Shampooing argan",
+   "quantity": 3,
+   "amount": 204.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0093",
+   "order_date": "2026-09-07",
+   "customer": {
+    "city": "Fès",
+    "segment": "Retail"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 2,
+   "amount": 72.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0094",
+   "order_date": "2026-08-28",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Dattes Medjool 500 g",
+   "quantity": 1,
+   "amount": 75.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0095",
+   "order_date": "2026-08-28",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Retail"
+   },
+   "product": "Shampooing argan",
+   "quantity": 2,
+   "amount": 136.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0096",
+   "order_date": "2026-09-17",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Retail"
+   },
+   "product": "Savon noir",
+   "quantity": 4,
+   "amount": 100.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0097",
+   "order_date": "2026-09-10",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Retail"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 4,
+   "amount": 144.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0098",
+   "order_date": "2026-07-08",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Retail"
+   },
+   "product": "Dattes Medjool 500 g",
+   "quantity": 2,
+   "amount": 150.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0099",
+   "order_date": "2026-09-16",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Retail"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 2,
+   "amount": 36.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0100",
+   "order_date": "2026-08-09",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Wholesale"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 4,
+   "amount": 180.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0101",
+   "order_date": "2026-08-06",
+   "customer": {
+    "city": "Fès",
+    "segment": "Retail"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 4,
+   "amount": 128.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0102",
+   "order_date": "2026-08-27",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Retail"
+   },
+   "product": "Savon noir",
+   "quantity": 1,
+   "amount": 25.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0103",
+   "order_date": "2026-09-04",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Huile d'olive 1 L",
+   "quantity": 2,
+   "amount": 178.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0104",
+   "order_date": "2026-07-26",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Shampooing argan",
+   "quantity": 3,
+   "amount": 204.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0105",
+   "order_date": "2026-07-05",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 4,
+   "amount": 180.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0106",
+   "order_date": "2026-08-12",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Retail"
+   },
+   "product": "Shampooing argan",
+   "quantity": 2,
+   "amount": 136.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0107",
+   "order_date": "2026-08-27",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Eau minérale 6x1,5 L",
+   "quantity": 2,
+   "amount": 72.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0108",
+   "order_date": "2026-09-20",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Retail"
+   },
+   "product": "Savon noir",
+   "quantity": 3,
+   "amount": 75.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0109",
+   "order_date": "2026-09-12",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Wholesale"
+   },
+   "product": "Huile d'olive 1 L",
+   "quantity": 1,
+   "amount": 89.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0110",
+   "order_date": "2026-07-11",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Shampooing argan",
+   "quantity": 4,
+   "amount": 272.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0111",
+   "order_date": "2026-07-28",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Wholesale"
+   },
+   "product": "Savon noir",
+   "quantity": 1,
+   "amount": 25.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0112",
+   "order_date": "2026-08-28",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Shampooing argan",
+   "quantity": 4,
+   "amount": 272.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0113",
+   "order_date": "2026-07-28",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 2,
+   "amount": 90.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0114",
+   "order_date": "2026-08-23",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 2,
+   "amount": 90.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0115",
+   "order_date": "2026-07-08",
+   "customer": {
+    "city": "Fès",
+    "segment": "Wholesale"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 2,
+   "amount": 64.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0116",
+   "order_date": "2026-09-23",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Wholesale"
+   },
+   "product": "Thé vert 200 g",
+   "quantity": 3,
+   "amount": 96.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0117",
+   "order_date": "2026-08-12",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Retail"
+   },
+   "product": "Café moulu 250 g",
+   "quantity": 2,
+   "amount": 90.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0118",
+   "order_date": "2026-08-10",
+   "customer": {
+    "city": "Tanger",
+    "segment": "Wholesale"
+   },
+   "product": "Shampooing argan",
+   "quantity": 2,
+   "amount": 136.0,
+   "rating": 4
+  },
+  {
+   "order_id": "ORD-0119",
+   "order_date": "2026-09-19",
+   "customer": {
+    "city": "Marrakech",
+    "segment": "Wholesale"
+   },
+   "product": "Jus d'orange 1 L",
+   "quantity": 1,
+   "amount": 18.0,
+   "rating": 5
+  },
+  {
+   "order_id": "ORD-0120",
+   "order_date": "2026-09-18",
+   "customer": {
+    "city": "Casablanca",
+    "segment": "Wholesale"
+   },
+   "product": "Savon noir",
+   "quantity": 2,
+   "amount": 50.0,
+   "rating": 3
+  },
+  {
+   "order_id": "ORD-0004",
+   "order_date": "2026-09-04",
+   "customer": {
+    "city": "Rabat",
+    "segment": "Wholesale"
+   },
+   "product": "Dattes Medjool 500 g",
+   "quantity": 1,
+   "amount": 75.0,
+   "rating": 3
+  }
+ ]
+}

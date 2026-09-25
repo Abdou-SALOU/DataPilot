@@ -220,7 +220,7 @@ def test_project_keeps_only_the_guided_rename_workspace(tmp_path, monkeypatch):
     project_url = upload.headers["Location"]
     overview_page = test_client.get(project_url).get_data(as_text=True)
     page = test_client.get(project_url + "/names").get_data(as_text=True)
-    assert '<details class="project-file-details">' in page
+    assert 'class="meta-row"' in page
     assert page.count("joueurs.csv") == 1
     assert '<select id="translation-column" name="column" required>' not in overview_page
     assert '<select id="translation-column" name="column" required>' in page
@@ -239,7 +239,9 @@ def test_project_keeps_only_the_guided_rename_workspace(tmp_path, monkeypatch):
     assert 'aria-current="page"' in page
     assert "DataPilot vous aide" in page
     assert "Poser une question" not in page
-    assert "Étape 3 sur 4" in page
+    assert page.count('class="side-link') == 6
+    assert f'href="{project_url}/pipeline"' in page
+    assert f'href="{project_url}/sql"' in page
     assert "Télécharger Excel" in page
     assert "Fichier JSON" in page
     assert "Fichier CSV" in page
@@ -292,8 +294,13 @@ def test_demo_creates_ready_to_explore_project(tmp_path, monkeypatch):
         follow_redirects=True,
     )
     assert response.status_code == 200
-    assert "Démonstration ventes PME" in response.get_data(as_text=True)
+    page = response.get_data(as_text=True)
+    assert "Comptoir Atlas · ventes" in page
     assert len(list((tmp_path / "storage").glob("*/project.json"))) == 1
+    lakehouse = next((tmp_path / "storage").glob("*/lakehouse"))
+    assert (lakehouse / "bronze" / "data.parquet").exists()
+    assert (lakehouse / "silver" / "data.parquet").exists()
+    assert list((lakehouse / "gold").glob("gold_*.parquet"))
 
 
 def test_invalid_extension_is_rejected(tmp_path, monkeypatch):

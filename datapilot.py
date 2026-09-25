@@ -28,8 +28,8 @@ ALLOWED_EXTENSIONS = {".csv", ".xlsx", ".xls", ".json"}
 CHART_TYPES = {"auto", "bar", "line", "doughnut"}
 CHART_AGGREGATIONS = {"count", "mean", "sum", "median"}
 CHART_PALETTE = [
-    "#5b5bd6", "#2dd4bf", "#8b5cf6", "#38bdf8", "#f59e0b", "#f97316",
-    "#ec4899", "#14b8a6", "#818cf8", "#84cc16", "#fb7185", "#06b6d4",
+    "#0071e3", "#1f8a70", "#e8870e", "#6e6e73", "#0b3d6e", "#c9a227",
+    "#5aa9e6", "#a5662d", "#2e7d32", "#b0b0b5", "#c0392b", "#7fb8a4",
 ]
 
 FRENCH_MONTHS = {
@@ -889,7 +889,10 @@ def build_dashboard(frame: pd.DataFrame, *, profile: dict[str, Any] | None = Non
         if not counts.empty:
             charts.append(_chart_config(
                 title=f"Évolution des lignes · {name}",
-                labels=[str(value) for value in counts.index],
+                labels=[
+                    value.start_time.date().isoformat() if period_label == "semaine" else str(value)
+                    for value in counts.index
+                ],
                 values=[int(value) for value in counts.tolist()],
                 chart_type="line",
                 dataset_label="Nombre de lignes",
@@ -958,6 +961,94 @@ def build_dashboard(frame: pd.DataFrame, *, profile: dict[str, Any] | None = Non
         correlations.sort(key=lambda item: abs(item["value"]), reverse=True)
 
     return {"profile": profile, "charts": charts[:6], "correlations": correlations[:5]}
+
+
+def build_business_brief(frame: pd.DataFrame, *, source_kind: str | None = None) -> dict[str, Any]:
+    """Transforme des ventes en constats contrôlables, sans inventer de profit."""
+    if source_kind == "invoices":
+        return {"available": False, "reason": "Ces factures décrivent des achats ou des dépenses ; elles ne permettent pas de calculer les ventes."}
+    is_expense = source_kind == "captured_expenses"
+    names = {normalize_text(str(name)).replace(" ", "_"): name for name in frame.columns}
+    amount = next((names[key] for key in (
+        "chiffre_affaires_net_mad", "chiffre_affaires_net", "net_revenue",
+        "montant", "total_ttc", "total", "ventes", "sales", "revenue",
+    ) if key in names), None)
+    if amount is None:
+        return {"available": False, "reason": "Ajoutez une colonne de montant des ventes pour obtenir une synthèse métier."}
+
+    values = _coerce_numeric_series(frame[amount])
+    valid = values.notna()
+    if not valid.any():
+        return {"available": False, "reason": "Aucun montant exploitable n’a été reconnu dans ce fichier."}
+
+    valid_values = values[valid]
+    total = round(float(valid_values.sum()), 2)
+    used_rows = int(valid.sum())
+    excluded_rows = int((~valid).sum())
+    negative_rows = int((valid_values < 0).sum())
+    findings: list[dict[str, str]] = []
+    actions: list[str] = []
+
+    group_column = next((names[key] for key in (
+        "produit", "product", "categorie", "category", "ville", "city",
+    ) if key in names), None)
+    if group_column is not None:
+        positive = valid & values.gt(0)
+        labels = frame.loc[positive, group_column].astype("string").str.strip()
+        grouped = values[positive].groupby(labels).sum().dropna().sort_values(ascending=False)
+        grouped = grouped[grouped.index.notna() & (grouped.index != "")]
+        positive_total = float(values[positive].sum())
+        if not grouped.empty and positive_total > 0:
+            leader = str(grouped.index[0])
+            share = round(float(grouped.iloc[0]) / positive_total * 100, 1)
+            is_city = normalize_text(str(group_column)).replace(" ", "_") in {"ville", "city"}
+            caution = ("Vérifiez si cette dépense peut être réduite sans nuire à l'activité." if is_expense
+                       else "Comparez les coûts et la période avant de réallouer des moyens." if is_city
+                       else "Vérifiez sa marge avant d’en augmenter la promotion.")
+            findings.append({
+                "title": "Meilleure contribution observée",
+                "detail": f"{leader} représente {share:g} % des montants positifs selon « {group_column} ». {caution}",
+            })
+            if is_expense:
+                actions.append(f"Examiner les justificatifs de « {leader} » et chercher une économie possible.")
+            elif is_city:
+                actions.append(f"Comparer les ventes et les coûts de « {leader} » avec les autres villes avant de réallouer des moyens.")
+            else:
+                actions.append(f"Vérifier la disponibilité et la marge de « {leader} » avant de renforcer sa mise en avant.")
+
+    if excluded_rows:
+        actions.append(f"Vérifier {excluded_rows} ligne(s) sans montant exploitable avant de tirer une conclusion.")
+    if negative_rows:
+        actions.append(f"Contrôler {negative_rows} montant(s) négatif(s) : retour, remboursement ou erreur de saisie ?")
+    if not actions:
+        actions.append("Comparer ce total à une période précédente de même durée avant de changer vos décisions.")
+
+    cost_column = next((names[key] for key in (
+        "cout", "cout_total", "cost", "cost_total", "charges",
+    ) if key in names), None)
+    limitations = (["Le total des dépenses ne donne ni bénéfice ni solde de trésorerie sans données de ventes."] if is_expense
+                   else ["Le total des montants n’est pas un bénéfice et ne prouve pas qu'il s'agit de ventes encaissées."])
+    if cost_column is None and not is_expense:
+        limitations.append("Aucun coût complet n’a été identifié : la rentabilité ne peut pas être calculée.")
+    if excluded_rows:
+        limitations.append(f"{excluded_rows} ligne(s) exclue(s) du total faute de montant valide.")
+    if negative_rows:
+        limitations.append("Les montants négatifs sont inclus dans le total et demandent une vérification métier.")
+    duplicates = int(frame.duplicated().sum())
+    if duplicates:
+        limitations.append(f"{duplicates} ligne(s) identique(s) sont incluses dans le total ; vérifiez s’il s’agit de doublons réels.")
+
+    return {
+        "available": True,
+        "total_label": "Dépenses déclarées" if is_expense else "Ventes déclarées" if source_kind == "captured_sales" else "Total observé",
+        "amount_column": str(amount),
+        "total": total,
+        "used_rows": used_rows,
+        "excluded_rows": excluded_rows,
+        "findings": findings,
+        "actions": actions,
+        "limitations": limitations,
+    }
 
 
 def chart_builder_options(frame: pd.DataFrame) -> dict[str, list[dict[str, str]]]:

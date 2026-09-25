@@ -1,0 +1,19 @@
+{
+  "entreprise": "Boutique Atlas (fictive)",
+  "documents": [
+    "ventes_caisse.xlsx",
+    "ventes_complementaires.txt",
+    "carnet_manuscrit.png"
+  ],
+  "prelecture": [
+    "ventes_caisse.xlsx 3 ligne(s) proposées depuis le tableau. Vérifiez-les. 3 ligne(s) proposées. À vérifier une par une. Ouvrir le document",
+    "ventes_complementaires.txt 2 ligne(s) proposées depuis le texte. Vérifiez-les. 2 ligne(s) proposées. À vérifier une par une. Ouvrir le document",
+    "carnet_manuscrit.png 5 ligne(s) proposées depuis la photo par lecture locale. Vérifiez chaque montant. 5 ligne(s) proposées. À vérifier une par une. Ouvrir le document"
+  ],
+  "lignes_confirmees": 10,
+  "correction_humaine": "The → Thé ; date de la photo ajoutée",
+  "montant_total_attendu": 291.5,
+  "montant_total_observe": 291.5,
+  "graphiques": 4,
+  "url_locale": "http://127.0.0.1:5083/project/5205869c6bf7418a9509a7ba4de16e00"
+}

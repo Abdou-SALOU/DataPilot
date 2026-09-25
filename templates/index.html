@@ -1,151 +1,178 @@
 {% extends "base.html" %}
-{% block title %}DataPilot · Des fichiers aux décisions{% endblock %}
+{% from "_icons.html" import icon %}
+{% block title %}DataPilot · {{ _('Des fichiers bruts aux décisions fiables.') }}{% endblock %}
+{% block body_class %}page-home{% endblock %}
 
 {% block content %}
-<section class="hero" aria-labelledby="hero-title">
-  <div class="hero-copy" data-reveal="hero">
-    <span class="hero-badge"><i aria-hidden="true"></i> Pensé pour les PME</span>
-    <h1 id="hero-title">Transformez vos fichiers en <em>décisions claires.</em></h1>
-    <p>Ventes, stocks, clients ou finances : importez votre fichier et obtenez une analyse lisible, des corrections vérifiables et des graphiques prêts à présenter.</p>
-
-    <div class="hero-actions">
-      <a class="btn primary" href="#importer">Analyser mes données <span aria-hidden="true">→</span></a>
-      <form action="{{ url_for('demo') }}" method="post" class="demo-form" data-loading-form data-loading-text="Préparation de la démo…">
-        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-        <button class="btn secondary" type="submit">Voir une démonstration</button>
-      </form>
-    </div>
-
-    <div class="trust-row" aria-label="Garanties DataPilot">
-      <span><b aria-hidden="true">✓</b> Original conservé</span>
-      <span><b aria-hidden="true">✓</b> Corrections validées par vous</span>
-      <span><b aria-hidden="true">✓</b> Résultats expliqués</span>
-    </div>
+<section class="hero container" aria-labelledby="hero-title">
+  <span class="hero-badge"><i aria-hidden="true"></i> {{ _('Plateforme de qualité des données') }}</span>
+  <h1 id="hero-title">{{ _('Des fichiers désordonnés') }} <span>{{ _('aux données fiables.') }}</span></h1>
+  <p class="hero-lead">{{ _('DataPilot ingère vos tableurs, PDF et photos de carnets, contrôle chaque colonne avec un contrat de données, propose les corrections et publie des tables prêtes pour la BI, le SQL et l’API.') }}</p>
+  <div class="hero-actions">
+    <form action="{{ url_for('demo') }}" method="post" data-loading-form data-loading-text="{{ _('Préparation de la démo…') }}">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <button class="btn primary large" type="submit" data-submit-button>{{ icon('play') }} {{ _('Essayer la démo') }}</button>
+    </form>
+    <a class="btn secondary large" href="#start">{{ _('Importer un fichier') }}</a>
   </div>
+  <p class="hero-note">{{ _('Aucun envoi en ligne : les fichiers restent sur cet ordinateur.') }}</p>
 
-  <form class="upload-card" id="importer" action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" data-reveal="hero" data-loading-form data-loading-text="Analyse en cours…">
-    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-    <div class="upload-card-head">
-      <div>
-        <span class="step-label">Commencer</span>
-        <h2>Importez votre fichier</h2>
+  <div class="flow-card" id="pipeline" data-reveal="hero">
+    <div class="flow">
+      <div class="flow-node is-source">
+        <span class="flow-icon">{{ icon('source') }}</span>
+        <strong>{{ _('Sources') }}</strong>
+        <small>{{ _('Photo · PDF · Excel · CSV') }}</small>
+        {% if showcase %}<span class="flow-metric">{{ showcase.source_name }}</span>{% endif %}
+      </div>
+      <span class="flow-arrow">{{ icon('arrow') }}</span>
+      <div class="flow-node is-bronze">
+        <span class="flow-icon">{{ icon('bronze') }}</span>
+        <strong>{{ _('Bronze') }}</strong>
+        <small>{{ _('Données brutes') }}</small>
+        {% if showcase %}<span class="flow-metric">{{ showcase.bronze_rows|thousands }} {{ _('lignes') }}</span>{% endif %}
+      </div>
+      <span class="flow-arrow">{{ icon('arrow') }}</span>
+      <div class="flow-node is-contract">
+        <span class="flow-icon">{{ icon('contract') }}</span>
+        <strong>{{ _('Contrat') }}</strong>
+        <small>{{ _('Contrôles qualité') }}</small>
+        {% if showcase %}<span class="flow-metric">{{ showcase.checks_total }} {{ _('Contrôles qualité')|lower }}</span>{% endif %}
+      </div>
+      <span class="flow-arrow">{{ icon('arrow') }}</span>
+      <div class="flow-node is-silver">
+        <span class="flow-icon">{{ icon('silver') }}</span>
+        <strong>{{ _('Silver') }}</strong>
+        <small>{{ _('Données typées et corrigées') }}</small>
+        {% if showcase %}<span class="flow-metric">{% if showcase.silver_score > showcase.bronze_score %}{{ _('Qualité') }} {{ showcase.bronze_score }} → {{ showcase.silver_score }} %{% else %}{{ _('Qualité') }} {{ showcase.bronze_score }} %, {{ _('corrections à valider') }}{% endif %}</span>{% endif %}
+      </div>
+      <span class="flow-arrow">{{ icon('arrow') }}</span>
+      <div class="flow-node is-gold">
+        <span class="flow-icon">{{ icon('gold') }}</span>
+        <strong>{{ _('Gold') }}</strong>
+        <small>{{ _('Tables métier') }}</small>
+        {% if showcase %}<span class="flow-metric">{{ showcase.gold_tables }} {{ _('tables Parquet') }}</span>{% endif %}
       </div>
     </div>
-
-    <label class="dropzone" for="dataset">
-      <span class="upload-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14.5v3A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-3"/></svg>
-      </span>
-      <strong>Déposez votre fichier ici</strong>
-      <small id="fileHelp">ou cliquez pour le sélectionner</small>
-      <input id="dataset" name="dataset" type="file" accept=".csv,.xlsx,.xls,.json" aria-describedby="fileHelp filePrivacy" required>
-      <span class="file-name" id="fileName">Aucun fichier sélectionné</span>
-      <span class="format-list" aria-label="Formats acceptés"><i>CSV</i><i>Excel</i><i>JSON</i><i>20 Mo max.</i></span>
-    </label>
-
-    <button class="btn primary wide" type="submit" data-submit-button>Analyser mon fichier <span aria-hidden="true">→</span></button>
-    <p class="local-note" id="filePrivacy"><span aria-hidden="true">●</span> Le fichier brut reste sur cet ordinateur.</p>
-    <div class="loading-state" role="status" aria-live="polite" hidden>
-      <span class="loading-bar" aria-hidden="true"><i></i></span>
-      <strong>Analyse en cours…</strong>
-      <small>Lecture, vérification et préparation du tableau de bord.</small>
+    <div class="flow-outputs">
+      <span>{{ _('Sorties') }}</span>
+      <span class="chip">{{ icon('overview') }} {{ _('Tableau de bord automatique') }}</span>
+      <span class="chip">SQL · DuckDB</span>
+      <span class="chip">API JSON</span>
+      <span class="chip">Excel · CSV · JSON</span>
+      <span class="chip">{{ _('Lineage et journal') }}</span>
     </div>
-  </form>
-</section>
-
-<section class="capability-strip" aria-label="Fonctionnalités principales" data-reveal>
-  <span><b>4</b> formats acceptés</span>
-  <span><b>100%</b> traçable</span>
-  <span><b>1 clic</b> pour exporter</span>
-  <span><b>0</b> compétence technique requise</span>
-</section>
-
-<section class="invoice-import" id="invoice-import" data-reveal aria-labelledby="invoice-import-title">
-  <div class="invoice-copy">
-    <span class="eyebrow">Factures PDF et photos</span>
-    <h2 id="invoice-import-title">Transformez vos factures en tableau clair.</h2>
-    <p>Déposez jusqu’à 10 factures. DataPilot repère les informations utiles, puis vous demande de les vérifier avant de créer les graphiques.</p>
-    <ol>
-      <li><span>1</span> Sélectionnez vos documents</li>
-      <li><span>2</span> Vérifiez les montants détectés</li>
-      <li><span>3</span> Confirmez avant l’analyse</li>
-    </ol>
-  </div>
-  <form action="{{ url_for('upload_invoices') }}" method="post" enctype="multipart/form-data" class="invoice-upload" data-loading-form data-loading-text="Lecture des factures…">
-    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-    <label for="invoices"><strong>Choisir mes factures</strong><small id="invoice-help">PDF avec texte, PNG, JPG, TIFF ou WEBP · 10 fichiers maximum</small></label>
-    <input id="invoices" name="invoices" type="file" accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.webp" aria-describedby="invoice-help invoice-privacy" multiple required>
-    <p id="invoice-privacy">Aucun document n’est envoyé en ligne. Une photo nécessite un module de lecture installé sur l’ordinateur.</p>
-    <button class="btn primary wide" type="submit" data-submit-button>Préparer mes factures <span aria-hidden="true">→</span></button>
-    <div class="loading-state inline-loading" role="status" aria-live="polite" hidden><span class="loading-bar" aria-hidden="true"><i></i></span><strong>Lecture des factures…</strong></div>
-  </form>
-</section>
-
-<section class="workflow-section" id="fonctionnement" data-reveal>
-  <div class="workflow-head">
-    <span class="eyebrow">Un parcours guidé</span>
-    <h2>Du fichier brut à une vision exploitable</h2>
-    <p>DataPilot automatise le travail répétitif et vous laisse la décision finale.</p>
-  </div>
-  <div class="process" data-stagger>
-    <article>
-      <span class="process-icon">01</span>
-      <div><h3>Vérifier</h3><p>Repérez les cellules vides, doublons et formats incohérents en quelques secondes.</p></div>
-    </article>
-    <article>
-      <span class="process-icon">02</span>
-      <div><h3>Corriger</h3><p>Validez uniquement les améliorations utiles. Chaque modification reste visible.</p></div>
-    </article>
-    <article>
-      <span class="process-icon">03</span>
-      <div><h3>Décider</h3><p>Consultez les tendances, créez vos graphiques et posez vos questions simplement.</p></div>
-    </article>
   </div>
 </section>
 
-<section class="value-grid" data-reveal>
-  <article class="value-card value-wide">
-    <span class="value-kicker">Clarté immédiate</span>
-    <h2>Les informations importantes apparaissent en premier.</h2>
-    <p>Qualité du fichier, indicateurs clés et graphiques automatiques : vous savez rapidement ce qui mérite votre attention.</p>
-    <div class="mini-dashboard" aria-hidden="true">
-      <span><i style="height:42%"></i></span><span><i style="height:68%"></i></span><span><i style="height:54%"></i></span><span><i style="height:86%"></i></span><span><i style="height:72%"></i></span>
+<section class="section container" id="start" aria-labelledby="start-title">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">{{ _('Commencer') }}</span>
+      <h2 id="start-title">{{ _('Choisissez votre point de départ') }}</h2>
+      <p>{{ _('Trois entrées, un même pipeline contrôlé.') }}</p>
     </div>
-  </article>
-  <article class="value-card">
-    <span class="value-icon" aria-hidden="true">✓</span>
-    <h3>Vous gardez le contrôle</h3>
-    <p>Aucune correction n’est appliquée sans votre confirmation.</p>
-  </article>
-  <article class="value-card dark-card">
-    <span class="value-icon" aria-hidden="true">↗</span>
-    <h3>Prêt à présenter</h3>
-    <p>Exportez vos données propres et vos graphiques en quelques clics.</p>
-  </article>
+  </div>
+  <div class="start-grid">
+    <article class="start-card" id="importer">
+      <header>
+        <span class="start-icon">{{ icon('table') }}</span>
+        <div><h3>{{ _('Tableur') }}</h3><p>{{ _('CSV, Excel ou JSON jusqu’à 20 Mo et 100 000 lignes.') }}</p></div>
+      </header>
+      <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" data-loading-form data-loading-text="{{ _('Analyse en cours…') }}">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <label class="dropzone" for="dataset">
+          <span class="start-icon" aria-hidden="true">{{ icon('upload') }}</span>
+          <strong>{{ _('Déposez votre fichier ici') }}</strong>
+          <small id="fileHelp">{{ _('ou cliquez pour le sélectionner') }}</small>
+          <input id="dataset" name="dataset" type="file" accept=".csv,.xlsx,.xls,.json" aria-describedby="fileHelp" required>
+          <span class="file-name" id="fileName">{{ _('Aucun fichier sélectionné') }}</span>
+          <span class="format-list"><i>CSV</i><i>XLSX</i><i>XLS</i><i>JSON</i></span>
+        </label>
+        <button class="btn primary wide" type="submit" data-submit-button>{{ _('Analyser le fichier') }}</button>
+        <div class="loading-state" role="status" aria-live="polite" hidden><span class="loading-bar" aria-hidden="true"><i></i></span><strong>{{ _('Analyse en cours…') }}</strong></div>
+      </form>
+    </article>
+
+    <article class="start-card" id="documents-import">
+      <header>
+        <span class="start-icon amber">{{ icon('camera') }}</span>
+        <div><h3>{{ _('Photos et carnets manuscrits') }}</h3><p>{{ _('Jusqu’à 8 documents : photo, PDF scanné, TXT, Excel. L’OCR local propose des lignes que vous validez.') }}</p></div>
+      </header>
+      <form action="{{ url_for('upload_documents') }}" method="post" enctype="multipart/form-data" data-loading-form data-loading-text="{{ _('Lecture des documents…') }}">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <fieldset class="segmented">
+          <legend>{{ _('Ventes') }} / {{ _('Dépenses') }}</legend>
+          <label><input type="radio" name="purpose" value="sales" checked> {{ _('Ventes') }}</label>
+          <label><input type="radio" name="purpose" value="expenses"> {{ _('Dépenses') }}</label>
+        </fieldset>
+        <div class="field">
+          <label for="capture-currency">{{ _('Monnaie') }}</label>
+          <select id="capture-currency" name="currency"><option value="MAD">Dirham (MAD)</option><option value="EUR">Euro (EUR)</option><option value="XOF">Franc CFA (XOF)</option><option value="USD">Dollar (USD)</option><option value="">{{ _('Autre ou inconnue') }}</option></select>
+        </div>
+        <div class="field">
+          <label for="documents">{{ _('Documents') }}</label>
+          <input id="documents" name="documents" type="file" accept=".png,.jpg,.jpeg,.webp,.tif,.tiff,.pdf,.txt,.csv,.xlsx,.xls,.json,image/*" multiple>
+        </div>
+        <div class="field">
+          <label for="camera">{{ _('Prendre une photo') }}</label>
+          <input id="camera" name="camera" type="file" accept="image/*" capture="environment">
+        </div>
+        <button class="btn primary wide" type="submit" data-submit-button>{{ _('Lire les documents') }}</button>
+      </form>
+    </article>
+
+    <article class="start-card" id="invoice-import">
+      <header>
+        <span class="start-icon green">{{ icon('invoice') }}</span>
+        <div><h3>{{ _('Factures fournisseurs') }}</h3><p>{{ _('Jusqu’à 10 factures PDF ou photos. Fournisseur, date, HT, TVA et TTC sont extraits puis vérifiés par vous.') }}</p></div>
+      </header>
+      <form action="{{ url_for('upload_invoices') }}" method="post" enctype="multipart/form-data" data-loading-form data-loading-text="{{ _('Lecture des factures…') }}">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <label class="dropzone" for="invoices">
+          <span class="start-icon green" aria-hidden="true">{{ icon('invoice') }}</span>
+          <strong>PDF · PNG · JPG · TIFF</strong>
+          <small>{{ _('ou cliquez pour le sélectionner') }}</small>
+          <input id="invoices" name="invoices" type="file" accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.webp" multiple required>
+        </label>
+        <button class="btn primary wide" type="submit" data-submit-button>{{ _('Extraire les factures') }}</button>
+      </form>
+    </article>
+  </div>
+</section>
+
+<section class="section container" id="features" aria-labelledby="features-title">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">{{ _('Ce que fait DataPilot') }}</span>
+      <h2 id="features-title">{{ _('L’ingénierie d’un data engineer, l’interface d’un produit grand public.') }}</h2>
+    </div>
+  </div>
+  <div class="features-grid">
+    <article class="feature"><span class="start-icon">{{ icon('contract') }}</span><h3>{{ _('Contrat de données') }}</h3><p>{{ _('Types, champs obligatoires, unicité, plages et libellés cohérents sont déduits puis contrôlés sur chaque exécution.') }}</p></article>
+    <article class="feature"><span class="start-icon">{{ icon('pipeline') }}</span><h3>{{ _('Architecture médaillon') }}</h3><p>{{ _('Bronze, Silver et Gold en Parquet : les données brutes ne sont jamais écrasées.') }}</p></article>
+    <article class="feature"><span class="start-icon">{{ icon('lineage') }}</span><h3>{{ _('Lineage et journal') }}</h3><p>{{ _('Chaque exécution est tracée : empreinte SHA-256 du fichier, durée par étape, lignes entrées et sorties.') }}</p></article>
+    <article class="feature"><span class="start-icon">{{ icon('sql') }}</span><h3>{{ _('Console SQL') }}</h3><p>{{ _('Interrogez Bronze, Silver et Gold avec DuckDB, en lecture seule et sans accès disque.') }}</p></article>
+    <article class="feature"><span class="start-icon amber">{{ icon('camera') }}</span><h3>{{ _('OCR avec validation humaine') }}</h3><p>{{ _('Photos de carnets et PDF scannés lus localement, chaque ligne confirmée avant tout calcul.') }}</p></article>
+    <article class="feature"><span class="start-icon green">{{ icon('api') }}</span><h3>{{ _('API et exports') }}</h3><p>{{ _('API JSON, Excel sécurisé contre l’injection de formules, CSV et JSON.') }}</p></article>
+  </div>
 </section>
 
 {% if projects %}
-<section class="recent" id="analyses" data-reveal>
+<section class="section container" id="analyses" aria-labelledby="recent-title">
   <div class="section-head">
-    <div><span class="eyebrow">Votre espace</span><h2>Analyses récentes</h2><p>Retrouvez les fichiers déjà analysés sur cet ordinateur.</p></div>
-    <span class="section-count" aria-label="{{ projects|length }} analyses">{{ projects|length }}</span>
+    <div><span class="eyebrow">{{ _('Mes analyses') }}</span><h2 id="recent-title">{{ _('Analyses récentes') }}</h2><p>{{ _('Retrouvez les fichiers déjà analysés sur cet ordinateur.') }}</p></div>
   </div>
-  <div class="project-list">
+  <div class="recent-list">
     {% for project in projects %}
-      <a href="{{ url_for('project', project_id=project.id) }}" class="project-row">
-        <span class="file-badge">{{ project.extension|replace('.', '')|upper }}</span>
-        <span class="project-info"><strong>{{ project.name|replace('_', ' ') }}</strong><small>{{ project.original_filename }}</small><time datetime="{{ project.updated_at }}">{{ project.date_label }}</time></span>
-        <span class="quality-mini">Qualité {{ project.quality_after or project.quality_before }}/100</span>
-        <span class="arrow" aria-hidden="true">→</span>
-      </a>
+    <a href="{{ url_for('project', project_id=project.id) }}" class="recent-row">
+      <span class="file-badge">{{ (project.extension|replace('.', '')|upper)[:4] }}</span>
+      <span class="info"><strong>{{ project.name|replace('_', ' ')|tr }}</strong><small>{{ project.original_filename }} · {{ project.date_label|tr }}</small></span>
+      <span class="pill {% if (project.quality_after or project.quality_before or 0) >= 90 %}pass{% elif (project.quality_after or project.quality_before or 0) >= 70 %}warn{% else %}fail{% endif %}">{{ _('Qualité') }} {{ project.quality_after or project.quality_before }}/100</span>
+      <span class="arrow" aria-hidden="true">›</span>
+    </a>
     {% endfor %}
   </div>
 </section>
 {% endif %}
-
-<section class="final-cta" data-reveal>
-  <span class="eyebrow">Votre prochain fichier</span>
-  <h2>Prêt à comprendre ce que vos données racontent ?</h2>
-  <a class="btn dark" href="#importer">Commencer l’analyse <span aria-hidden="true">↑</span></a>
-</section>
 {% endblock %}

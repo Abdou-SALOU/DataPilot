@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Accès depuis votre téléphone') }} · DataPilot{% endblock %}
+{% block content %}
+<section class="error-page">
+  <span class="eyebrow">{{ _('Accès depuis votre téléphone') }}</span>
+  <h1>{{ _('Entrez votre code d’accès') }}</h1>
+  <p>{{ _('Le code est défini sur l’ordinateur qui héberge DataPilot.') }}</p>
+  <form action="{{ url_for('network_access') }}" method="post" style="display:grid;gap:12px;margin-top:20px;text-align:left">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <input type="hidden" name="next" value="{{ next }}">
+    <label for="access-code">{{ _('Code d’accès') }}</label>
+    <input id="access-code" name="access_code" type="password" required autocomplete="current-password">
+    <button class="btn primary" type="submit">{{ _('Entrer') }}</button>
+  </form>
+</section>
+{% endblock %}

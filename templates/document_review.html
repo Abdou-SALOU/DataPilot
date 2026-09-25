@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Vérifiez les lignes lues avant de continuer') }} · DataPilot{% endblock %}
+{% block content %}
+<div class="container capture-flow">
+  <nav class="crumbs"><a href="{{ url_for('index') }}#documents-import">← {{ _('Retour') }}</a></nav>
+  <header class="capture-heading">
+    <span class="eyebrow">{{ _('Étape 2 sur 3 · Vérifier') }}</span>
+    <h1>{{ _('Vérifiez les lignes lues avant de continuer') }}</h1>
+    <p>{{ _('Une photo peut être mal lue. Comparez les lignes ci-dessous avec vos documents. Vous pouvez tout corriger.') }}</p>
+    {% if metadata.truncated %}<p class="capture-warning">{{ _('Ce lot contient plus de 100 lignes. Seules les 100 premières sont proposées : importez la suite dans un autre lot.') }}</p>{% endif %}
+    <button class="btn secondary small" type="button" data-read-guide>🔊 {{ _('Écouter les consignes') }}</button>
+  </header>
+
+  <div class="capture-review">
+    <section class="capture-documents" aria-label="{{ _('Documents ajoutés') }}">
+      {% for document in metadata.documents %}
+      <article class="capture-document">
+        {% if document.is_image %}<a href="{{ url_for('view_document', project_id=project_id, stored_name=document.stored_name) }}" target="_blank" rel="noopener"><img src="{{ url_for('view_document', project_id=project_id, stored_name=document.stored_name) }}" alt="{{ document.display_name }}" loading="lazy"></a>{% endif %}
+        <div>
+          <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><strong>{{ document.display_name }}</strong><span class="pill {% if document.suggested_rows %}pass{% else %}warn{% endif %}">{{ document.suggested_rows }} {{ _('ligne(s)') }}</span></div>
+          <p>{{ document.message|tr }}</p>
+          <p><a href="{{ url_for('view_document', project_id=project_id, stored_name=document.stored_name) }}" target="_blank" rel="noopener">{{ _('Ouvrir le document') }}</a></p>
+        </div>
+      </article>
+      {% endfor %}
+    </section>
+
+    <form action="{{ url_for('confirm_documents', project_id=project_id) }}" method="post" class="capture-form" data-loading-form data-loading-text="{{ _('Préparation du résumé…') }}">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <div class="capture-form-title"><h2 style="font-size:22px">{% if metadata.source_kind == 'captured_sales' %}{{ _('Mes ventes') }}{% else %}{{ _('Mes dépenses') }}{% endif %}</h2><p>{{ _('Une ligne = une vente ou une dépense. Le montant est le total de la ligne.') }}</p></div>
+      <div class="capture-rows" data-capture-rows>
+        {% for row in rows %}
+        <fieldset class="capture-row">
+          <legend>{{ _('Ligne') }} <span data-row-number>{{ loop.index }}</span>{% if row.confidence %} · <span class="pill {% if row.confidence >= 0.9 %}pass{% elif row.confidence >= 0.75 %}warn{% else %}fail{% endif %} plain">{{ _('Confiance OCR') }} {{ (row.confidence * 100)|round|int }} %</span>{% endif %}</legend>
+          <div class="capture-fields">
+            <label>{{ _('Date') }} <small>{{ _('facultatif') }}</small><input name="date[]" type="date" value="{{ row.date }}"></label>
+            <label>{{ _('Article ou motif') }}<input name="product[]" value="{{ row.product }}" maxlength="80" placeholder="{{ _('Ex. Pain') }}" autocomplete="off"></label>
+            <label>{{ _('Quantité') }}<input name="quantity[]" type="number" min="1" max="9999" value="{{ row.quantity or '1' }}" inputmode="numeric"></label>
+            <label>{{ _('Total payé') }}<input name="amount[]" value="{{ row.amount }}" inputmode="decimal" placeholder="{{ _('Ex. 25,50') }}"></label>
+            <button class="capture-remove" type="button" data-remove-row aria-label="{{ _('Retirer cette ligne') }}" title="{{ _('Retirer cette ligne') }}">×</button>
+          </div>
+          <input type="hidden" name="source[]" value="{{ row.source }}">
+        </fieldset>
+        {% endfor %}
+      </div>
+      <div><button class="btn secondary small" type="button" data-add-row>{{ _('+ Ajouter une ligne') }}</button></div>
+      <p class="capture-caution">{{ _('Les lignes sans article et sans montant seront ignorées. Aucun chiffre proposé par l’ordinateur n’est utilisé avant votre confirmation.') }}</p>
+      <button class="btn primary large capture-confirm" type="submit" data-submit-button>✓ {{ _('J’ai vérifié · Voir l’analyse') }}</button>
+    </form>
+  </div>
+</div>
+<template id="capture-row-template"><fieldset class="capture-row"><legend>{{ _('Ligne') }} <span data-row-number></span></legend><div class="capture-fields"><label>{{ _('Date') }} <small>{{ _('facultatif') }}</small><input name="date[]" type="date"></label><label>{{ _('Article ou motif') }}<input name="product[]" maxlength="80" placeholder="{{ _('Ex. Pain') }}" autocomplete="off"></label><label>{{ _('Quantité') }}<input name="quantity[]" type="number" min="1" max="9999" value="1" inputmode="numeric"></label><label>{{ _('Total payé') }}<input name="amount[]" inputmode="decimal" placeholder="{{ _('Ex. 25,50') }}"></label><button class="capture-remove" type="button" data-remove-row aria-label="{{ _('Retirer cette ligne') }}" title="{{ _('Retirer cette ligne') }}">×</button></div><input type="hidden" name="source[]" value=""></fieldset></template>
+<script>
+(() => {
+  const list = document.querySelector('[data-capture-rows]');
+  const renumber = () => list.querySelectorAll('[data-row-number]').forEach((node, index) => { node.textContent = index + 1; });
+  document.querySelector('[data-add-row]').addEventListener('click', () => {
+    if (list.children.length >= 100) return;
+    list.append(document.querySelector('#capture-row-template').content.cloneNode(true));
+    renumber();
+    list.lastElementChild.querySelector('[name="product[]"]').focus();
+  });
+  list.addEventListener('click', (event) => {
+    if (!event.target.matches('[data-remove-row]')) return;
+    event.target.closest('.capture-row').remove();
+    renumber();
+  });
+  document.querySelector('[data-read-guide]').addEventListener('click', () => {
+    if (!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const message = new SpeechSynthesisUtterance({{ _('Comparez chaque ligne avec vos photos ou documents. Corrigez le nom, la quantité et le montant. Puis appuyez sur J’ai vérifié.')|tojson }});
+    message.lang = window.DP_LANG === 'en' ? 'en-US' : 'fr-FR';
+    message.rate = 0.9;
+    speechSynthesis.speak(message);
+  });
+})();
+</script>
+{% endblock %}

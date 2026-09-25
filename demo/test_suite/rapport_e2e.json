@@ -1,0 +1,570 @@
+{
+  "spreadsheets": [
+    {
+      "file": "ventes_mensuelles_sales.csv",
+      "rows": 306,
+      "expected_anomalies": {
+        "duplicates": 6,
+        "label_typos": 11,
+        "negative_quantity": 3,
+        "text_in_amount": 2,
+        "missing_city": 4,
+        "out_of_scale_rating": 2,
+        "padded_text": 5
+      },
+      "failed_or_warned_checks": {
+        "table.no_duplicates": {
+          "status": "fail",
+          "rows": 6,
+          "detail": "6 doublon(s) exact(s)"
+        },
+        "id_vente.unique": {
+          "status": "fail",
+          "rows": 6,
+          "detail": "6 identifiant(s) répété(s)"
+        },
+        "date_vente.range": {
+          "status": "warn",
+          "rows": 11,
+          "detail": "11 date(s) future(s), 0 avant 2000"
+        },
+        "ville.consistent": {
+          "status": "fail",
+          "rows": 11,
+          "detail": "Marrakesh → Marrakech, Casblanca → Casablanca, rabat → Rabat"
+        },
+        "quantite.min": {
+          "status": "fail",
+          "rows": 3,
+          "detail": "3 valeur(s) négative(s)"
+        },
+        "montant.not_null": {
+          "status": "warn",
+          "rows": 2,
+          "detail": "2 cellule(s) vide(s)"
+        },
+        "note_satisfaction.max": {
+          "status": "fail",
+          "rows": 2,
+          "detail": "2 valeur(s) hors échelle"
+        }
+      },
+      "suggested_fixes": [
+        "Supprimer les doublons exacts",
+        "Retirer les espaces inutiles",
+        "Harmoniser les libellés de ville",
+        "Convertir date_vente en date",
+        "Compléter ville par la valeur fréquente",
+        "Convertir prix_unitaire en nombre",
+        "Convertir montant en nombre",
+        "Compléter montant par la médiane"
+      ],
+      "quality_bronze": {
+        "total": 19,
+        "passed": 12,
+        "warnings": 2,
+        "failed": 5,
+        "score": 68
+      },
+      "quality_silver_after_cleaning": {
+        "total": 19,
+        "passed": 16,
+        "warnings": 1,
+        "failed": 2,
+        "score": 87
+      },
+      "rows_after_cleaning": 300,
+      "gold_tables": [
+        "gold_column_profile",
+        "gold_montant_by_produit",
+        "gold_monthly_trend"
+      ],
+      "sql_status": 200,
+      "quality_page_ok": true,
+      "english_page_ok": false,
+      "seconds": 1.23
+    },
+    {
+      "file": "orders_en.json",
+      "rows": 121,
+      "expected_anomalies": {
+        "duplicates": 1,
+        "missing_amount": 1,
+        "label_variant": 1
+      },
+      "failed_or_warned_checks": {
+        "table.no_duplicates": {
+          "status": "fail",
+          "rows": 1,
+          "detail": "1 doublon(s) exact(s)"
+        },
+        "order_id.unique": {
+          "status": "fail",
+          "rows": 1,
+          "detail": "1 identifiant(s) répété(s)"
+        },
+        "amount.not_null": {
+          "status": "warn",
+          "rows": 1,
+          "detail": "1 cellule(s) vide(s)"
+        },
+        "customer.city.consistent": {
+          "status": "fail",
+          "rows": 1,
+          "detail": "casablanca → Casablanca"
+        }
+      },
+      "suggested_fixes": [
+        "Supprimer les doublons exacts",
+        "Retirer les espaces inutiles",
+        "Harmoniser les libellés de customer.city",
+        "Convertir order_date en date",
+        "Compléter amount par la médiane"
+      ],
+      "quality_bronze": {
+        "total": 16,
+        "passed": 12,
+        "warnings": 1,
+        "failed": 3,
+        "score": 78
+      },
+      "quality_silver_after_cleaning": {
+        "total": 16,
+        "passed": 16,
+        "warnings": 0,
+        "failed": 0,
+        "score": 100
+      },
+      "rows_after_cleaning": 120,
+      "gold_tables": [
+        "gold_column_profile",
+        "gold_amount_by_product",
+        "gold_monthly_trend"
+      ],
+      "sql_status": 200,
+      "quality_page_ok": true,
+      "english_page_ok": false,
+      "seconds": 0.77
+    },
+    {
+      "file": "comptoir_atlas_ventes.xlsx",
+      "rows": 900,
+      "expected_anomalies": {
+        "missing": 10,
+        "duplicates": 8,
+        "format": 10,
+        "label_typos": 15,
+        "outliers": 9
+      },
+      "failed_or_warned_checks": {
+        "table.no_duplicates": {
+          "status": "fail",
+          "rows": 8,
+          "detail": "8 doublon(s) exact(s)"
+        },
+        "id_vente.not_null": {
+          "status": "warn",
+          "rows": 1,
+          "detail": "1 cellule(s) vide(s)"
+        },
+        "id_vente.unique": {
+          "status": "fail",
+          "rows": 8,
+          "detail": "8 identifiant(s) répété(s)"
+        },
+        "date_vente.not_null": {
+          "status": "warn",
+          "rows": 1,
+          "detail": "1 cellule(s) vide(s)"
+        },
+        "ville.consistent": {
+          "status": "fail",
+          "rows": 4,
+          "detail": "Casblanca → Casablanca, Casa → Casablanca, Marrakesh → Marrakech"
+        },
+        "canal_vente.consistent": {
+          "status": "fail",
+          "rows": 3,
+          "detail": "whatsapp → WhatsApp, Wathsapp → WhatsApp, En magasin → Boutique"
+        },
+        "type_client.consistent": {
+          "status": "fail",
+          "rows": 1,
+          "detail": "Fidele → Fidèle"
+        },
+        "categorie_produit.consistent": {
+          "status": "fail",
+          "rows": 1,
+          "detail": "Epicerie → Épicerie"
+        },
+        "quantite.type": {
+          "status": "fail",
+          "rows": 1,
+          "detail": "1 valeur(s) non numérique(s)"
+        },
+        "quantite.min": {
+          "status": "fail",
+          "rows": 1,
+          "detail": "1 valeur(s) négative(s)"
+        },
+        "prix_unitaire_mad.not_null": {
+          "status": "warn",
+          "rows": 1,
+          "detail": "1 cellule(s) vide(s)"
+        },
+        "prix_unitaire_mad.min": {
+          "status": "fail",
+          "rows": 1,
+          "detail": "1 valeur(s) négative(s)"
+        },
+        "remise_mad.not_null": {
+          "status": "warn",
+          "rows": 1,
+          "detail": "1 cellule(s) vide(s)"
+        },
+        "frais_livraison_factures_mad.type": {
+          "status": "fail",
+          "rows": 1,
+          "detail": "1 valeur(s) non numérique(s)"
+        },
+        "cout_livraison_mad.min": {
+          "status": "fail",
+          "rows": 1,
+          "detail": "1 valeur(s) négative(s)"
+        },
+        "statut_commande.consistent": {
+          "status": "fail",
+          "rows": 3,
+          "detail": "Livree → Livrée, livré → Livrée, Annuléé → Annulée"
+        },
+        "note_satisfaction.type": {
+          "status": "fail",
+          "rows": 1,
+          "detail": "1 valeur(s) non numérique(s)"
+        },
+        "note_satisfaction.max": {
+          "status": "fail",
+          "rows": 1,
+          "detail": "1 valeur(s) hors échelle"
+        }
+      },
+      "suggested_fixes": [
+        "Supprimer les doublons exacts",
+        "Retirer les espaces inutiles",
+        "Harmoniser les libellés de ville",
+        "Harmoniser les libellés de canal_vente",
+        "Harmoniser les libellés de type_client",
+        "Harmoniser les libellés de categorie_produit",
+        "Harmoniser les libellés de statut_commande",
+        "Réparer les montants incohérents",
+        "Convertir date_vente en date",
+        "Compléter ville par la valeur fréquente",
+        "Compléter mode_paiement par la valeur fréquente"
+      ],
+      "quality_bronze": {
+        "total": 41,
+        "passed": 23,
+        "warnings": 4,
+        "failed": 14,
+        "score": 61
+      },
+      "quality_silver_after_cleaning": {
+        "total": 41,
+        "passed": 39,
+        "warnings": 2,
+        "failed": 0,
+        "score": 98
+      },
+      "rows_after_cleaning": 892,
+      "gold_tables": [
+        "gold_column_profile",
+        "gold_chiffre_affaires_net_mad_by_produit",
+        "gold_monthly_trend"
+      ],
+      "sql_status": 200,
+      "quality_page_ok": true,
+      "english_page_ok": false,
+      "seconds": 5.78
+    }
+  ],
+  "documents": [
+    {
+      "expected_rows": 5,
+      "proposed_rows": 5,
+      "rows_found": 5,
+      "recall_pct": 100.0,
+      "exact_amounts": 5,
+      "amount_accuracy_pct": 100.0,
+      "extra_rows": 0,
+      "expected_total": 104.0,
+      "proposed_total": 104.0,
+      "details": [
+        {
+          "expected": "Pain 12.50",
+          "read": "Pain 12.50",
+          "amount_ok": true
+        },
+        {
+          "expected": "Lait 18.00",
+          "read": "Lait 18.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Sucre 32.00",
+          "read": "Sucre 32.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Thé 14.50",
+          "read": "Thé 14.50",
+          "amount_ok": true
+        },
+        {
+          "expected": "Biscuits 27.00",
+          "read": "Biscuits 27.00",
+          "amount_ok": true
+        }
+      ],
+      "file": "carnet_epicerie_propre.png",
+      "difficulty": {
+        "font": "Inkfree.ttf",
+        "rotation_deg": 0.0,
+        "blur": 0.0,
+        "jpeg_quality": null
+      },
+      "review_page_status": 200,
+      "confirmed_status": 302,
+      "confirmed_total_matches": true,
+      "pipeline_after_confirmation": true,
+      "seconds": 3.62
+    },
+    {
+      "expected_rows": 6,
+      "proposed_rows": 6,
+      "rows_found": 6,
+      "recall_pct": 100.0,
+      "exact_amounts": 6,
+      "amount_accuracy_pct": 100.0,
+      "extra_rows": 0,
+      "expected_total": 73.0,
+      "proposed_total": 73.0,
+      "details": [
+        {
+          "expected": "Sandwich 25.00",
+          "read": "Sandwich 25.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Jus orange 15.00",
+          "read": "Jus orange 15.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Msemen 6.00",
+          "read": "Msemen 6.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Café 10.00",
+          "read": "Café 10.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Eau 5.00",
+          "read": "Eau 5.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Harira 12.00",
+          "read": "Harira 12.00",
+          "amount_ok": true
+        }
+      ],
+      "file": "carnet_snack_incline.jpg",
+      "difficulty": {
+        "font": "segoepr.ttf",
+        "rotation_deg": 2.8,
+        "blur": 0.6,
+        "jpeg_quality": 62
+      },
+      "review_page_status": 200,
+      "confirmed_status": 302,
+      "confirmed_total_matches": true,
+      "pipeline_after_confirmation": true,
+      "seconds": 2.02
+    },
+    {
+      "expected_rows": 4,
+      "proposed_rows": 4,
+      "rows_found": 4,
+      "recall_pct": 100.0,
+      "exact_amounts": 4,
+      "amount_accuracy_pct": 100.0,
+      "extra_rows": 0,
+      "expected_total": 203.5,
+      "proposed_total": 203.5,
+      "details": [
+        {
+          "expected": "Savon noir 25.00",
+          "read": "Savon noir 25.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Henné 40.00",
+          "read": "Henné 40.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Argan 120.00",
+          "read": "Argan 120.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Encens 18.50",
+          "read": "Encens 18.50",
+          "amount_ok": true
+        }
+      ],
+      "file": "carnet_boutique_difficile.jpg",
+      "difficulty": {
+        "font": "LHANDW.TTF",
+        "rotation_deg": -4.5,
+        "blur": 1.1,
+        "jpeg_quality": 45
+      },
+      "review_page_status": 200,
+      "confirmed_status": 302,
+      "confirmed_total_matches": true,
+      "pipeline_after_confirmation": true,
+      "seconds": 1.49
+    },
+    {
+      "expected_rows": 6,
+      "proposed_rows": 6,
+      "rows_found": 6,
+      "recall_pct": 100.0,
+      "exact_amounts": 6,
+      "amount_accuracy_pct": 100.0,
+      "extra_rows": 0,
+      "expected_total": 73.0,
+      "proposed_total": 73.0,
+      "details": [
+        {
+          "expected": "Sandwich 25.00",
+          "read": "Sandwich 25.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Jus orange 15.00",
+          "read": "Jus orange 15.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Msemen 6.00",
+          "read": "Msemen 6.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Café 10.00",
+          "read": "Café 10.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Eau 5.00",
+          "read": "Eau 5.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Harira 12.00",
+          "read": "Harira 12.00",
+          "amount_ok": true
+        }
+      ],
+      "file": "carnet_snack_scan.pdf",
+      "difficulty": {
+        "font": "segoepr.ttf",
+        "rotation_deg": 2.8,
+        "blur": 0.6,
+        "jpeg_quality": 62
+      },
+      "review_page_status": 200,
+      "confirmed_status": 302,
+      "confirmed_total_matches": true,
+      "pipeline_after_confirmation": true,
+      "seconds": 2.45
+    },
+    {
+      "expected_rows": 5,
+      "proposed_rows": 5,
+      "rows_found": 5,
+      "recall_pct": 100.0,
+      "exact_amounts": 5,
+      "amount_accuracy_pct": 100.0,
+      "extra_rows": 0,
+      "expected_total": 117.0,
+      "proposed_total": 117.0,
+      "details": [
+        {
+          "expected": "Pain 25.50",
+          "read": "Pain 25.50",
+          "amount_ok": true
+        },
+        {
+          "expected": "Lait 18.00",
+          "read": "Lait 18.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Sucre 32.00",
+          "read": "Sucre 32.00",
+          "amount_ok": true
+        },
+        {
+          "expected": "Thé 14.50",
+          "read": "The 14.50",
+          "amount_ok": true
+        },
+        {
+          "expected": "Biscuits 27.00",
+          "read": "Biscuits 27.00",
+          "amount_ok": true
+        }
+      ],
+      "file": "carnet_photo_realiste.png",
+      "difficulty": "photo réaliste générée par IA",
+      "review_page_status": 200,
+      "confirmed_status": 302,
+      "confirmed_total_matches": true,
+      "pipeline_after_confirmation": true,
+      "seconds": 1.97
+    }
+  ],
+  "invoices": [
+    {
+      "file": "facture_atlas.png",
+      "fields_ok": 7,
+      "fields_total": 7,
+      "fields": {
+        "supplier": true,
+        "invoice_number": true,
+        "date": true,
+        "total_ht": true,
+        "vat": true,
+        "total_ttc": true,
+        "currency": true
+      },
+      "read": {
+        "fournisseur": "ATLAS DISTRIBUTION SARL",
+        "numero_facture": "F-2026-0412",
+        "date_facture": "2026-09-12",
+        "total_ht": 1250.0,
+        "tva": 250.0,
+        "total_ttc": 1500.0,
+        "devise": "MAD",
+        "taux_tva": 20.0,
+        "fichier_source": "facture_atlas.png",
+        "etat": "À vérifier"
+      }
+    }
+  ]
+}
